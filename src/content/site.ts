@@ -13,7 +13,7 @@ export const site = {
   email: "devikaraj5885@gmail.com",
 
   // TODO(owner): add WhatsApp number in international format, e.g. "+91XXXXXXXXXX"
-  whatsapp: "",
+  whatsapp: "" as string,
 
   hours: "Mon–Sun · 9:00–21:00 IST",
   location: "Remote · Worldwide",

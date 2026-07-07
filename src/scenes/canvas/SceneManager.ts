@@ -28,12 +28,13 @@ uniform float uProgress;   // 0..5 formation index
 uniform float uTime;
 uniform float uIntro;      // 0→1 fade-in scatter
 uniform float uPixelRatio;
+uniform float uQShift;     // hero Q slides right of the headline on desktop
 
 varying float vAlpha;
 varying vec3 vColor;
 
-const vec3 SILVER = vec3(0.80, 0.80, 0.86);
-const vec3 DIM    = vec3(0.42, 0.42, 0.50);
+const vec3 SILVER = vec3(0.78, 0.78, 0.85);
+const vec3 DIM    = vec3(0.40, 0.40, 0.48);
 const vec3 VOLT   = vec3(0.486, 0.420, 1.0);
 const vec3 PLASMA = vec3(0.243, 0.878, 0.941);
 
@@ -64,8 +65,9 @@ void main() {
   vec3 star = aStar;
   star.x += sin(uTime * 0.05 + aSeed.x * 6.283) * 0.12;
 
-  // q: breathing shimmer
+  // q: breathing shimmer, offset toward the right on wide viewports
   vec3 q = aQ * (1.0 + sin(uTime * 0.8 + aSeed.x * 6.283) * 0.004);
+  q.x += uQShift;
 
   /* ---- pick blend pair ---- */
   vec3 A = q;      vec3 B = stream;   vec3 cA = SILVER;               vec3 cB = mix(DIM, PLASMA, aSeed.x * 0.5);
@@ -85,10 +87,11 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
 
-  float size = aSeed.y * (0.8 + aSeed.x * 1.4);
-  gl_PointSize = size * uPixelRatio * (34.0 / -mv.z);
+  // small, dim points — additive blending across ~18k particles needs restraint
+  float size = aSeed.y * (0.7 + aSeed.x * 0.9);
+  gl_PointSize = max(size * uPixelRatio * (7.5 / -mv.z), 1.0);
 
-  vAlpha = (0.35 + aSeed.z * 0.65) * uIntro;
+  vAlpha = (0.06 + aSeed.z * 0.12) * uIntro;
 }
 `;
 
@@ -171,6 +174,7 @@ export class SceneManager {
         uTime: { value: 0 },
         uIntro: { value: 0 },
         uPixelRatio: { value: dprClamp() },
+        uQShift: { value: 0 },
       },
     });
 
@@ -189,10 +193,15 @@ export class SceneManager {
     this.camera.aspect = w / h;
     this.camera.updateProjectionMatrix();
     this.renderer.setSize(w, h, false);
-    // keep the Q inside narrow viewports
-    const fit = Math.min(1, w / 900);
-    const scale = 0.72 + 0.28 * fit;
+
+    // fit formations (extent ≈ ±2.3) inside the visible frustum at z=6
+    const halfH = Math.tan(((this.camera.fov / 2) * Math.PI) / 180) * 6;
+    const halfW = halfH * this.camera.aspect;
+    const scale = Math.min(1, (Math.min(halfW, halfH) * 0.82) / 2.3);
     this.points.scale.setScalar(scale);
+
+    // on wide screens the hero Q composes to the right of the headline
+    this.material.uniforms.uQShift.value = w >= 1024 ? 1.25 : 0;
   };
 
   private onVisibility = () => {
