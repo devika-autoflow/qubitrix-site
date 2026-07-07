@@ -1,0 +1,291 @@
+@import "tailwindcss";
+
+/* ---------------------------------- */
+/* QUBITRIX design tokens  (plan §6-7) */
+/* ---------------------------------- */
+
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-500.woff2") format("woff2");
+  font-weight: 500;
+  font-style: normal;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Clash Display";
+  src: url("/fonts/ClashDisplay-600.woff2") format("woff2");
+  font-weight: 600;
+  font-style: normal;
+  font-display: swap;
+}
+
+@theme {
+  /* Base — the machine */
+  --color-obsidian-0: #040407;
+  --color-obsidian-1: #0a0a0f;
+  --color-obsidian-2: #12121a;
+  --color-obsidian-3: #1a1a24;
+
+  /* Metal — the brand */
+  --color-silver-100: #f2f2f5;
+  --color-silver-400: #9a9aa6;
+  --color-silver-600: #55555f;
+
+  /* Energy — the intelligence */
+  --color-volt: #7c6bff;
+  --color-volt-tint: #a79cff;
+  --color-plasma: #3ee0f0;
+  --color-plasma-tint: #7fe9f5;
+
+  /* Semantic */
+  --color-ok: #37d9a0;
+  --color-warn: #ffb454;
+  --color-err: #ff6b7a;
+
+  --font-display: "Clash Display", "Inter Variable", system-ui, sans-serif;
+  --font-sans: "Inter Variable", system-ui, -apple-system, sans-serif;
+  --font-mono: "JetBrains Mono", ui-monospace, "Cascadia Mono", monospace;
+
+  --ease-out-3: cubic-bezier(0.215, 0.61, 0.355, 1);
+  --ease-inout-2: cubic-bezier(0.455, 0.03, 0.515, 0.955);
+}
+
+/* ---------------------------------- */
+/* Base                                */
+/* ---------------------------------- */
+
+html {
+  background: var(--color-obsidian-0);
+  color-scheme: dark;
+  scrollbar-width: thin;
+  scrollbar-color: #2a2a36 transparent;
+}
+
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+body {
+  @apply bg-obsidian-0 text-silver-100 font-sans antialiased;
+  overflow-x: clip;
+}
+
+::selection {
+  background: color-mix(in srgb, var(--color-volt) 40%, transparent);
+  color: var(--color-silver-100);
+}
+
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+::-webkit-scrollbar-thumb {
+  background: #23232e;
+  border-radius: 8px;
+  border: 2px solid var(--color-obsidian-0);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-volt);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+
+/* ---------------------------------- */
+/* Brand utilities                     */
+/* ---------------------------------- */
+
+/* Metallic display text — never flat white (plan §5) */
+.metal-text {
+  background: linear-gradient(
+    165deg,
+    #fafafc 0%,
+    #c9c9d4 38%,
+    #8e8e9c 62%,
+    #e6e6ee 100%
+  );
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* The OS voice — mono section labels */
+.hud-label {
+  font-family: var(--font-mono);
+  font-size: 0.6875rem;
+  font-weight: 500;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--color-silver-400);
+}
+
+.hairline {
+  border-color: rgb(255 255 255 / 0.08);
+}
+
+/* Aurora gradient — max one element per viewport (plan §6) */
+.aurora-grad {
+  background: linear-gradient(90deg, var(--color-volt), var(--color-plasma));
+}
+.aurora-text {
+  background: linear-gradient(90deg, var(--color-volt-tint), var(--color-plasma-tint));
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+/* Gradient-border pill (GradientButton, rebuilt) */
+.btn-aurora-border {
+  position: relative;
+  isolation: isolate;
+}
+.btn-aurora-border::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, var(--color-volt), var(--color-plasma));
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  z-index: -1;
+  opacity: 0.75;
+  transition: opacity 240ms var(--ease-out-3);
+}
+.btn-aurora-border:hover::before {
+  opacity: 1;
+}
+.btn-aurora-border:hover {
+  box-shadow: 0 0 32px rgb(124 107 255 / 0.25);
+}
+
+/* OS window panel */
+.os-panel {
+  background: color-mix(in srgb, var(--color-obsidian-2) 88%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 20px;
+  backdrop-filter: blur(16px);
+}
+
+/* GlowCard — spotlight follows pointer per-card (rewritten from dump, plan §8) */
+.glow-card {
+  --gx: 50%;
+  --gy: 50%;
+  --glow-alpha: 0;
+  position: relative;
+  background: color-mix(in srgb, var(--color-obsidian-2) 92%, transparent);
+  border: 1px solid rgb(255 255 255 / 0.08);
+  border-radius: 24px;
+  transition: border-color 240ms var(--ease-out-3);
+  isolation: isolate;
+  overflow: hidden;
+}
+.glow-card::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  background: radial-gradient(
+    280px 280px at var(--gx) var(--gy),
+    rgb(124 107 255 / calc(0.13 * var(--glow-alpha))),
+    transparent 70%
+  );
+  z-index: -1;
+  transition: opacity 240ms var(--ease-out-3);
+}
+.glow-card::after {
+  content: "";
+  position: absolute;
+  inset: -1px;
+  border-radius: inherit;
+  padding: 1px;
+  background: radial-gradient(
+    220px 220px at var(--gx) var(--gy),
+    rgb(124 107 255 / calc(0.7 * var(--glow-alpha))),
+    transparent 70%
+  );
+  -webkit-mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  mask:
+    linear-gradient(#fff 0 0) content-box,
+    linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  mask-composite: exclude;
+  pointer-events: none;
+}
+.glow-card:hover {
+  border-color: rgb(255 255 255 / 0.14);
+}
+
+/* Blinking brand dot (the qubit / cursor) */
+@keyframes qubit-blink {
+  0%,
+  55% {
+    opacity: 1;
+  }
+  60%,
+  100% {
+    opacity: 0.25;
+  }
+}
+.qubit-dot {
+  display: inline-block;
+  width: 0.14em;
+  height: 0.14em;
+  border-radius: 9999px;
+  background: var(--color-volt);
+  box-shadow: 0 0 12px var(--color-volt);
+  animation: qubit-blink 1.6s steps(1) infinite;
+}
+
+@keyframes pulse-soft {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.12);
+    opacity: 0.75;
+  }
+}
+.pulse-soft {
+  animation: pulse-soft 2.8s var(--ease-inout-2) infinite;
+}
+
+/* Static poster fallback when WebGL/motion unavailable */
+.canvas-poster {
+  background:
+    radial-gradient(60% 45% at 50% 42%, rgb(124 107 255 / 0.1), transparent 65%),
+    radial-gradient(45% 35% at 52% 45%, rgb(62 224 240 / 0.05), transparent 60%),
+    var(--color-obsidian-0);
+}
+
+/* ---------------------------------- */
+/* Motion safety                       */
+/* ---------------------------------- */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+  }
+}
