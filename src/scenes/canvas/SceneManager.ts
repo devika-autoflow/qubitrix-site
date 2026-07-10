@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {
   qFormation,
   streamFormation,
-  blackHoleFormation,
+  orbitalFormation,
   starFormation,
   auroraFormation,
 } from "./formations";
@@ -19,7 +19,7 @@ import { dprClamp } from "../../lib/caps";
 const VERT = /* glsl */ `
 attribute vec3 aQ;
 attribute vec3 aStream;
-attribute vec3 aBlackHole;
+attribute vec3 aOrbital;
 attribute vec3 aStar;
 attribute vec3 aAurora;
 attribute vec4 aSeed; // x: rand01, y: size, z: rand01, w: speed
@@ -52,13 +52,19 @@ void main() {
   vec3 stream = aStream;
   stream.x = mod(stream.x + uTime * (0.6 + aSeed.w * 0.9), 12.0) - 6.0;
 
+  // orbital: rings rotate at seed-dependent speed
+  float ang = uTime * (0.05 + aSeed.w * 0.11);
+  float ca = cos(ang), sa = sin(ang);
+  vec3 orbital = vec3(
+    aOrbital.x * ca - aOrbital.z * sa,
+    aOrbital.y,
+    aOrbital.x * sa + aOrbital.z * ca
+  );
+
   // aurora: traveling wave — big, slow, unmistakable
   vec3 aurora = aAurora;
   aurora.y += sin(aurora.x * 0.9 + uTime * 0.7 + aSeed.x * 6.283) * 0.32
             + sin(aurora.x * 0.35 - uTime * 0.4 + aSeed.z * 6.283) * 0.18;
-
-  // black hole: faint shimmer — the disk glitters without moving
-  vec3 blackHole = aBlackHole * (1.0 + sin(uTime * 0.6 + aSeed.z * 6.283) * 0.006);
 
   // star: living drift — the sky breathes through work and process
   vec3 star = aStar;
@@ -71,8 +77,8 @@ void main() {
 
   /* ---- pick blend pair ---- */
   vec3 A = q;      vec3 B = stream;   vec3 cA = SILVER;               vec3 cB = mix(DIM, PLASMA, aSeed.x * 0.5);
-  if (fi > 0.5) { A = stream;  B = blackHole; cA = mix(DIM, PLASMA, aSeed.x * 0.5); cB = mix(SILVER, VOLT, aSeed.x * 0.65); }
-  if (fi > 1.5) { A = blackHole; B = star;   cA = mix(SILVER, VOLT, aSeed.x * 0.65); cB = mix(DIM, SILVER, aSeed.z * 0.5); }
+  if (fi > 0.5) { A = stream;  B = orbital;  cA = mix(DIM, PLASMA, aSeed.x * 0.5); cB = mix(VOLT, PLASMA, aSeed.z); }
+  if (fi > 1.5) { A = orbital; B = star;     cA = mix(VOLT, PLASMA, aSeed.z);      cB = mix(DIM, SILVER, aSeed.z * 0.5); }
   if (fi > 2.5) { A = star;    B = aurora;   cA = mix(DIM, SILVER, aSeed.z * 0.5);  cB = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); }
   if (fi > 3.5) { A = aurora;  B = aurora;   cA = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); cB = cA; }
 
@@ -155,7 +161,7 @@ export class SceneManager {
     set("position", qArr);
     set("aQ", qArr);
     set("aStream", streamFormation(count));
-    set("aBlackHole", blackHoleFormation(count));
+    set("aOrbital", orbitalFormation(count));
     set("aStar", starFormation(count));
     set("aAurora", auroraFormation(count));
 
@@ -233,7 +239,7 @@ export class SceneManager {
   private meshScale = 1;
 
   /** Formations drift into whichever side of the layout is empty (desktop). */
-  private static SHIFT_TARGETS = [0, 0, 1.3, 0, 0]; // Q stream blackhole star aurora
+  private static SHIFT_TARGETS = [0, 0, 1.3, 0, 0]; // Q stream orbital star aurora
   private wide = window.innerWidth >= 1024;
   private progress = 0;
   private targetProgress = 0;
