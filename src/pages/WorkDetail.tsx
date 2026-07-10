@@ -27,6 +27,27 @@ export default function WorkDetail() {
         </h1>
         <p className="mt-4 text-lg text-silver-400">{item.outcome}</p>
 
+        {item.images && (
+          <div className="mt-10 space-y-5">
+            {item.images.map((img) => (
+              <figure
+                key={img.src}
+                className="overflow-hidden rounded-2xl border border-white/8 bg-obsidian-2"
+              >
+                <img
+                  src={img.src}
+                  alt={img.alt}
+                  loading="lazy"
+                  className="w-full object-cover"
+                />
+                <figcaption className="border-t hairline px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-silver-600">
+                  {img.alt.toUpperCase()}
+                </figcaption>
+              </figure>
+            ))}
+          </div>
+        )}
+
         <div className="mt-8 flex flex-wrap gap-2">
           {item.stack.map((s) => (
             <span

@@ -5,12 +5,14 @@
 export const site = {
   name: "QUBITRIX",
   domain: "https://qubitrixai.com",
-  tagline: "Intelligence, engineered.",
+  tagline: "The next state of intelligence.",
+  /** Hero headline, one entry per display line. */
+  heroHeadline: ["The next state", "of intelligence"],
+  heroKicker: "AI ENGINEERING STUDIO",
   subline:
-    "An AI engineering studio. We build agents, automation, and custom AI systems that run your business around the clock.",
+    "An AI engineering studio building from first principles — agents, automation, and custom AI systems that work while the world sleeps.",
 
-  // TODO(owner): switch to hello@qubitrixai.com when the mailbox exists
-  email: "devikaraj5885@gmail.com",
+  email: "devika@qubitrixai.com",
 
   // TODO(owner): add WhatsApp number in international format, e.g. "+91XXXXXXXXXX"
   whatsapp: "" as string,
@@ -20,17 +22,28 @@ export const site = {
 
   linkedin: "https://www.linkedin.com/in/devika-nr-b84010369/",
 
+  /** Social channels — shown in Contact and Footer. */
+  socials: [
+    { label: "LinkedIn", href: "https://www.linkedin.com/company/qubitrixai/" },
+    { label: "Instagram", href: "https://www.instagram.com/qubitrix/" },
+    { label: "X / Twitter", href: "https://x.com/qubitrixai" },
+  ],
+
   /** n8n webhook for lead submissions (set VITE_N8N_WEBHOOK_URL in env). */
   webhookUrl: import.meta.env.VITE_N8N_WEBHOOK_URL as string | undefined,
+
+  /** n8n webhook that powers the chat console (set VITE_CHAT_WEBHOOK_URL in env). */
+  chatWebhookUrl: import.meta.env.VITE_CHAT_WEBHOOK_URL as string | undefined,
 
   /** Calendly booking link (set VITE_CALENDLY_URL in env). */
   calendlyUrl: import.meta.env.VITE_CALENDLY_URL as string | undefined,
 } as const;
 
 export const nav = [
-  { label: "System", href: "#capabilities" },
-  { label: "Lab", href: "#lab" },
-  { label: "Work", href: "#work" },
+  { label: "About", href: "#shift" },
+  { label: "Services", href: "#capabilities" },
+  { label: "Active Stack", href: "#lab" },
+  { label: "Portfolio", href: "#work" },
   { label: "Process", href: "#process" },
 ] as const;
 
@@ -38,8 +51,9 @@ export const sections = [
   { index: "01", id: "hero", label: "Qubitrix" },
   { index: "02", id: "shift", label: "The Shift" },
   { index: "03", id: "capabilities", label: "Capabilities" },
-  { index: "04", id: "lab", label: "Lab" },
+  { index: "04", id: "lab", label: "Active Stack" },
   { index: "05", id: "work", label: "Work" },
   { index: "06", id: "process", label: "Process" },
-  { index: "07", id: "contact", label: "Contact" },
+  { index: "07", id: "testimonials", label: "Signals" },
+  { index: "08", id: "contact", label: "Contact" },
 ] as const;

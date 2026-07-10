@@ -5,7 +5,7 @@ import GlowCard from "../../components/ui/GlowCard";
 import { services } from "../../content/services";
 import { useReveal } from "../../lib/useReveal";
 
-/** Scene 03 — natural scroll. Four systems dock in (plan §10). */
+/** Scene 03 — natural scroll. The service systems dock in (plan §10). */
 export default function Capabilities() {
   const ref = useRef<HTMLElement>(null);
   const navigate = useNavigate();
@@ -20,11 +20,11 @@ export default function Capabilities() {
       <SectionHeading
         index="03"
         kicker="Capabilities"
-        heading="Four systems. One outcome: leverage."
-        sub="Every engagement ships a working system — not a slide deck."
+        heading="Every system your growth needs."
+        sub="Agents, chatbots, automation, lead engines, content, custom AI — every engagement ships a working system, not a slide deck."
       />
 
-      <div className="mt-14 grid gap-5 sm:grid-cols-2">
+      <div className="mt-14 grid gap-5 sm:grid-cols-2 xl:grid-cols-3">
         {services.map((s) => (
           <div key={s.slug} data-reveal>
             <GlowCard
@@ -53,6 +53,16 @@ export default function Capabilities() {
           </div>
         ))}
       </div>
+
+      <p data-reveal className="mt-10 text-sm text-silver-600">
+        Something else in mind? The stack is bespoke —{" "}
+        <button
+          onClick={() => document.querySelector("#contact")?.scrollIntoView({ behavior: "smooth" })}
+          className="text-volt-tint hover:underline"
+        >
+          tell us what you're building →
+        </button>
+      </p>
     </section>
   );
 }

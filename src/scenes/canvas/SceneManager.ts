@@ -2,7 +2,7 @@ import * as THREE from "three";
 import {
   qFormation,
   streamFormation,
-  latticeFormation,
+  blackHoleFormation,
   orbitalFormation,
   starFormation,
   auroraFormation,
@@ -18,7 +18,7 @@ import { dprClamp } from "../../lib/caps";
 const VERT = /* glsl */ `
 attribute vec3 aQ;
 attribute vec3 aStream;
-attribute vec3 aLattice;
+attribute vec3 aBlackHole;
 attribute vec3 aOrbital;
 attribute vec3 aStar;
 attribute vec3 aAurora;
@@ -29,6 +29,10 @@ uniform float uTime;
 uniform float uIntro;      // 0→1 fade-in scatter
 uniform float uPixelRatio;
 uniform float uQShift;     // hero Q slides right of the headline on desktop
+uniform float uQScale;     // hero Q shrinks a touch on desktop for breathing room
+uniform float uXShift;     // per-section horizontal drift into blank space
+uniform vec2 uPointer;     // smoothed cursor in formation space (fine pointers)
+uniform float uHover;      // 0→1 once the cursor is live
 
 varying float vAlpha;
 varying vec3 vColor;
@@ -57,28 +61,39 @@ void main() {
     aOrbital.x * sa + aOrbital.z * ca
   );
 
-  // aurora: traveling wave
+  // aurora: traveling wave — big, slow, unmistakable
   vec3 aurora = aAurora;
-  aurora.y += sin(aurora.x * 0.9 + uTime * 0.7 + aSeed.x * 6.283) * 0.14;
+  aurora.y += sin(aurora.x * 0.9 + uTime * 0.7 + aSeed.x * 6.283) * 0.32
+            + sin(aurora.x * 0.35 - uTime * 0.4 + aSeed.z * 6.283) * 0.18;
 
-  // star: slow drift
+  // black hole: faint shimmer — the disk glitters without moving
+  vec3 blackHole = aBlackHole * (1.0 + sin(uTime * 0.6 + aSeed.z * 6.283) * 0.006);
+
+  // star: living drift — the sky breathes through work and process
   vec3 star = aStar;
-  star.x += sin(uTime * 0.05 + aSeed.x * 6.283) * 0.12;
+  star.x += sin(uTime * 0.11 + aSeed.x * 6.283) * 0.3;
+  star.y += cos(uTime * 0.08 + aSeed.z * 6.283) * 0.16;
 
   // q: breathing shimmer, offset toward the right on wide viewports
-  vec3 q = aQ * (1.0 + sin(uTime * 0.8 + aSeed.x * 6.283) * 0.004);
+  vec3 q = aQ * uQScale * (1.0 + sin(uTime * 0.8 + aSeed.x * 6.283) * 0.004);
   q.x += uQShift;
 
   /* ---- pick blend pair ---- */
   vec3 A = q;      vec3 B = stream;   vec3 cA = SILVER;               vec3 cB = mix(DIM, PLASMA, aSeed.x * 0.5);
-  if (fi > 0.5) { A = stream;  B = aLattice; cA = mix(DIM, PLASMA, aSeed.x * 0.5); cB = mix(SILVER, VOLT, aSeed.x * 0.65); }
-  if (fi > 1.5) { A = aLattice; B = orbital; cA = mix(SILVER, VOLT, aSeed.x * 0.65); cB = mix(VOLT, PLASMA, aSeed.z); }
+  if (fi > 0.5) { A = stream;  B = blackHole; cA = mix(DIM, PLASMA, aSeed.x * 0.5); cB = mix(SILVER, VOLT, aSeed.x * 0.65); }
+  if (fi > 1.5) { A = blackHole; B = orbital; cA = mix(SILVER, VOLT, aSeed.x * 0.65); cB = mix(VOLT, PLASMA, aSeed.z); }
   if (fi > 2.5) { A = orbital; B = star;     cA = mix(VOLT, PLASMA, aSeed.z);        cB = DIM; }
   if (fi > 3.5) { A = star;    B = aurora;   cA = DIM;  cB = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); }
   if (fi > 4.5) { A = aurora;  B = aurora;   cA = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); cB = cA; }
 
   vec3 pos = mix(A, B, ft);
+  pos.x += uXShift;
   vColor = mix(cA, cB, ft);
+
+  // hover glow: particles near the smoothed cursor warm up and trail the
+  // pointer. Kept subtle — it must never outshine the DOM text above it.
+  float glow = smoothstep(0.95, 0.0, distance(pos.xy, uPointer)) * uHover;
+  vColor = mix(vColor, mix(VOLT, PLASMA, aSeed.x), glow * 0.45);
 
   // intro: particles converge from a scattered cloud
   vec3 scatter = pos + normalize(vec3(aSeed.x - 0.5, aSeed.z - 0.5, aSeed.w - 0.5) + 0.001) * (3.5 * (1.0 - uIntro));
@@ -87,11 +102,11 @@ void main() {
   vec4 mv = modelViewMatrix * vec4(pos, 1.0);
   gl_Position = projectionMatrix * mv;
 
-  // small, dim points — additive blending across ~18k particles needs restraint
-  float size = aSeed.y * (0.7 + aSeed.x * 0.9);
-  gl_PointSize = max(size * uPixelRatio * (7.5 / -mv.z), 1.0);
+  // bolder points — the formations must read as the main event
+  float size = aSeed.y * (0.8 + aSeed.x * 1.0) * (1.0 + glow * 0.35);
+  gl_PointSize = max(size * uPixelRatio * (9.0 / -mv.z), 1.0);
 
-  vAlpha = (0.06 + aSeed.z * 0.12) * uIntro;
+  vAlpha = (0.13 + aSeed.z * 0.20 + glow * (0.06 + aSeed.z * 0.08)) * uIntro;
 }
 `;
 
@@ -149,7 +164,7 @@ export class SceneManager {
     set("position", qArr);
     set("aQ", qArr);
     set("aStream", streamFormation(count));
-    set("aLattice", latticeFormation(count));
+    set("aBlackHole", blackHoleFormation(count));
     set("aOrbital", orbitalFormation(count));
     set("aStar", starFormation(count));
     set("aAurora", auroraFormation(count));
@@ -175,6 +190,10 @@ export class SceneManager {
         uIntro: { value: 0 },
         uPixelRatio: { value: dprClamp() },
         uQShift: { value: 0 },
+        uQScale: { value: 1 },
+        uXShift: { value: 0 },
+        uPointer: { value: new THREE.Vector2(99, 99) },
+        uHover: { value: 0 },
       },
     });
 
@@ -199,19 +218,61 @@ export class SceneManager {
     const halfW = halfH * this.camera.aspect;
     const scale = Math.min(1, (Math.min(halfW, halfH) * 0.82) / 2.3);
     this.points.scale.setScalar(scale);
+    this.halfW = halfW;
+    this.halfH = halfH;
+    this.meshScale = scale;
 
-    // on wide screens the hero Q composes to the right of the headline
-    this.material.uniforms.uQShift.value = w >= 1024 ? 1.25 : 0;
+    // on wide screens the hero Q shrinks a touch and composes further right
+    // of the headline — clear air between copy and formation, never clipped.
+    // On small screens it stays centered behind the copy (overlap intended).
+    this.wide = w >= 1024;
+    const qScale = this.wide ? 0.86 : 1;
+    let qShift = 0;
+    if (this.wide) {
+      const desired = Math.max(1.7, (halfW / scale) * 0.42);
+      const maxShift = halfW / scale - 2.35 * qScale - 0.35;
+      qShift = Math.min(desired, maxShift);
+    }
+    this.material.uniforms.uQScale.value = qScale;
+    this.material.uniforms.uQShift.value = qShift;
+    this.applyShift();
   };
+
+  private halfW = 4;
+  private halfH = 2.8;
+  private meshScale = 1;
+
+  /** Formations drift into whichever side of the layout is empty (desktop). */
+  private static SHIFT_TARGETS = [0, 0, 1.15, -1.45, 0, 0]; // Q stream blackhole orbital star aurora
+  private wide = window.innerWidth >= 1024;
+  private progress = 0;
+  private targetProgress = 0;
+
+  private applyShift() {
+    if (!this.wide) {
+      this.material.uniforms.uXShift.value = 0;
+      return;
+    }
+    const p = this.progress;
+    const i = Math.min(4, Math.floor(p));
+    const t = p - i;
+    const s = t * t * (3 - 2 * t);
+    const T = SceneManager.SHIFT_TARGETS;
+    this.material.uniforms.uXShift.value = T[i] + (T[i + 1] - T[i]) * s;
+  }
 
   private onVisibility = () => {
     if (document.hidden) this.stop();
     else this.start();
   };
 
-  /** 0..5 continuous formation index, driven by ScrollTrigger. */
+  /**
+   * 0..5 continuous formation index, driven by ScrollTrigger.
+   * Only sets the target — the render loop glides toward it, so fast
+   * scrolling never snaps a formation.
+   */
   setProgress(p: number) {
-    this.material.uniforms.uProgress.value = Math.max(0, Math.min(5, p));
+    this.targetProgress = Math.max(0, Math.min(5, p));
   }
 
   /** Intro convergence 0..1 (LogoIntro drives this once). */
@@ -219,10 +280,13 @@ export class SceneManager {
     this.material.uniforms.uIntro.value = v;
   }
 
-  /** Normalized pointer −1..1 for parallax (desktop only). */
+  /** Normalized pointer −1..1 for parallax + hover glow (desktop only). */
   setPointer(x: number, y: number) {
     this.pointerTarget.set(x, y);
+    this.hoverActive = true;
   }
+
+  private hoverActive = false;
 
   start() {
     if (this.running || this.disposed) return;
@@ -234,11 +298,31 @@ export class SceneManager {
       const u = this.material.uniforms;
       u.uTime.value = this.clock.getElapsedTime();
 
+      // glide toward the scroll target — smooth morphs, never sudden
+      const diff = this.targetProgress - this.progress;
+      if (Math.abs(diff) > 0.0004) {
+        // 0.09: quick enough that a fast scroll still lands each formation
+        // fully (the plateau between morphs is where shapes must read clearly)
+        this.progress += diff * 0.09;
+        u.uProgress.value = this.progress;
+        this.applyShift();
+      }
+
       // gentle pointer parallax
       this.pointerCurrent.lerp(this.pointerTarget, 0.045);
       this.camera.position.x = this.pointerCurrent.x * 0.28;
       this.camera.position.y = -this.pointerCurrent.y * 0.18;
       this.camera.lookAt(0, 0, 0);
+
+      // hover glow follows the same eased pointer, mapped into the
+      // formation's pre-scale space so the shader can compare directly
+      if (this.hoverActive) {
+        u.uPointer.value.set(
+          (this.pointerCurrent.x * this.halfW) / this.meshScale,
+          (-this.pointerCurrent.y * this.halfH) / this.meshScale
+        );
+        u.uHover.value = Math.min(1, u.uHover.value + 0.04);
+      }
 
       this.renderer.render(this.scene, this.camera);
     };

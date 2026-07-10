@@ -113,6 +113,8 @@ export default function Lab() {
               role="group"
               aria-label="Research threads orbital map"
             >
+              {/* scrim — quiets the canvas glow behind the map */}
+              <div className="orbit-scrim absolute inset-[-12%]" aria-hidden="true" />
               {/* rings */}
               {RING_RADII.map((r) => (
                 <div
@@ -145,15 +147,15 @@ export default function Lab() {
                   <span
                     className={`flex h-10 w-10 items-center justify-center rounded-full border font-mono text-[11px] transition-all duration-300 ${
                       activeId === t.id
-                        ? "border-volt bg-volt/15 text-volt-tint shadow-[0_0_24px_rgba(124,107,255,0.4)]"
-                        : "border-white/15 bg-obsidian-2/90 text-silver-400 group-hover:border-white/30"
+                        ? "border-volt bg-obsidian-0 text-volt-tint shadow-[0_0_24px_rgba(124,107,255,0.4)]"
+                        : "border-white/15 bg-obsidian-0 text-silver-400 group-hover:border-white/30"
                     }`}
                   >
                     {String(t.id).padStart(2, "0")}
                   </span>
                   <span
-                    className={`mt-2 whitespace-nowrap font-mono text-[10px] tracking-[0.12em] transition-colors ${
-                      activeId === t.id ? "text-silver-100" : "text-silver-600"
+                    className={`mt-2 whitespace-nowrap rounded-md border border-white/6 bg-obsidian-0/85 px-2 py-0.5 font-mono text-[10px] tracking-[0.12em] transition-colors ${
+                      activeId === t.id ? "text-silver-100" : "text-silver-400"
                     }`}
                   >
                     {t.title.toUpperCase()}

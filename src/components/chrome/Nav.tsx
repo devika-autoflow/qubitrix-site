@@ -2,10 +2,14 @@ import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import QubitrixLogo from "../ui/QubitrixLogo";
 import Button from "../ui/Button";
-import { nav } from "../../content/site";
+import QuantumButton from "./QuantumButton";
+import { nav, site } from "../../content/site";
 import { scrollToTarget } from "../../lib/lenis";
 
-/** Fixed top bar — hides on scroll-down, returns on scroll-up (plan §11). */
+/**
+ * Fixed top bar — hides on scroll-down, returns on scroll-up (plan §11).
+ * Section links live in the bottom DockNav on md+; phones use the hamburger.
+ */
 export default function Nav() {
   const [hidden, setHidden] = useState(false);
   const [solid, setSolid] = useState(false);
@@ -51,41 +55,51 @@ export default function Nav() {
           }`}
         >
           <nav
-            className="mx-auto flex h-16 max-w-6xl items-center justify-between px-5 sm:px-8"
+            className="mx-auto flex h-16 max-w-[86rem] items-center justify-between px-5 sm:px-8 lg:px-10"
             aria-label="Primary"
           >
             <Link to="/" aria-label="Qubitrix home" onClick={() => setOpen(false)}>
               <QubitrixLogo markSize={24} />
             </Link>
 
-            <div className="hidden items-center gap-8 md:flex">
-              {nav.map((item) => (
-                <button
-                  key={item.href}
-                  onClick={() => goTo(item.href)}
-                  className="text-sm text-silver-400 transition-colors hover:text-silver-100"
-                >
-                  {item.label}
-                </button>
-              ))}
-              <Button variant="primary" onClick={() => goTo("#contact")}>
-                Book a call
+            <div className="hidden items-center gap-4 md:flex">
+              <QuantumButton />
+              <Link
+                to="/auth"
+                className="text-sm text-silver-400 transition-colors hover:text-silver-100"
+              >
+                Log in
+              </Link>
+              <Button as="a" variant="ghost" href="/auth?mode=signup" className="!px-5 !py-2.5">
+                Sign up
               </Button>
+              {site.calendlyUrl ? (
+                <Button as="a" variant="primary" href={site.calendlyUrl} target="_blank" rel="noreferrer">
+                  Book a call
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={() => goTo("#contact")}>
+                  Book a call
+                </Button>
+              )}
             </div>
 
-            <button
-              className="flex h-10 w-10 flex-col items-center justify-center gap-1.5 md:hidden"
-              aria-expanded={open}
-              aria-label={open ? "Close menu" : "Open menu"}
-              onClick={() => setOpen((v) => !v)}
-            >
-              <span
-                className={`h-px w-5 bg-silver-100 transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`}
-              />
-              <span
-                className={`h-px w-5 bg-silver-100 transition-transform ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`}
-              />
-            </button>
+            <div className="flex items-center gap-3 md:hidden">
+              <QuantumButton />
+              <button
+                className="flex h-10 w-10 flex-col items-center justify-center gap-1.5"
+                aria-expanded={open}
+                aria-label={open ? "Close menu" : "Open menu"}
+                onClick={() => setOpen((v) => !v)}
+              >
+                <span
+                  className={`h-px w-5 bg-silver-100 transition-transform ${open ? "translate-y-[3.5px] rotate-45" : ""}`}
+                />
+                <span
+                  className={`h-px w-5 bg-silver-100 transition-transform ${open ? "-translate-y-[3.5px] -rotate-45" : ""}`}
+                />
+              </button>
+            </div>
           </nav>
         </div>
       </header>
@@ -107,9 +121,21 @@ export default function Nav() {
                 </button>
               </li>
             ))}
-            <li className="pt-4">
-              <Button variant="primary" onClick={() => goTo("#contact")}>
-                Book a call
+            <li className="flex flex-wrap items-center gap-4 pt-4">
+              {site.calendlyUrl ? (
+                <Button as="a" variant="primary" href={site.calendlyUrl} target="_blank" rel="noreferrer">
+                  Book a call
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={() => goTo("#contact")}>
+                  Book a call
+                </Button>
+              )}
+              <Button as="a" variant="ghost" href="/auth" onClick={() => setOpen(false)}>
+                Log in
+              </Button>
+              <Button as="a" variant="ghost" href="/auth?mode=signup" onClick={() => setOpen(false)}>
+                Sign up
               </Button>
             </li>
           </ul>

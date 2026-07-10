@@ -10,11 +10,24 @@ Cinematic single-page journey + subpages for qubitrixai.com. Vite + React 18 + T
 - Brand says QUBITRIX everywhere. Quantum = metaphor/ambition, never a hardware claim. No fabricated stats or clients.
 
 ## Architecture invariants
-- ONE WebGL canvas (`scenes/canvas/SceneManager.ts`), driven by `getScene().setProgress(0..5)` from ScrollTriggers in `pages/Home.tsx`. Formations: Q(0) stream(1) lattice(2) orbital(3) starfield(4) aurora(5).
+- ONE WebGL canvas (`scenes/canvas/SceneManager.ts`), driven by `getScene().setProgress(0..5)` from ScrollTriggers in `pages/Home.tsx`. Formations: Q(0) stream(1) black hole(2) orbital(3) starfield(4) aurora(5).
 - Pins ONLY on Hero, Lab (desktop), Contact-adjacent moments. Everything else = natural scroll + `[data-reveal]` (see `lib/useReveal.ts`). Never add more pins (user decision).
-- Motion: GSAP + Lenis only — no framer-motion. DOM animates `transform`/`opacity` only.
+- Motion split (user decision, July 2026): GSAP + ScrollTrigger owns the canvas journey and section pins; framer-motion owns UI micro-interactions, overlays, nav, and scroll-linked reveal/parallax effects. Never animate the same element with both. DOM animates `transform`/`opacity` only.
+- Background/scroll animation must stay LIGHT: no scroll-jacking beyond existing pins, no heavy blur/filter animation, no layout-thrashing scroll listeners. If a scroll effect drops frames on mobile emulation, cut it.
 - No auth, no login popups, the site never interrupts the visitor.
 - Secrets: AI keys live in `netlify/functions/` env only. Anything `VITE_`-prefixed is public.
+
+## Skill routing — load ONLY the skill the task needs, not all at once
+Check this table before starting UI work; read the matching skill file on demand:
+- **`.claude/skills/frontend-design/SKILL.md`** → use when CREATING new UI or reshaping the look of existing UI: aesthetic direction, typography choices, hero/section composition, making the site feel distinctive and award-winning rather than templated.
+- **`.claude/skills/ui-ux-pro-max/SKILL.md`** → use when you need concrete design DATA or a UX quality check: picking color palettes, font pairings, component patterns (navbar, modal, card, form, table, chart), accessibility/UX review, or when UI "doesn't look professional" and you need to diagnose why. Its navigation/component docs are the reference for chrome components like the navbar.
+- **framer-motion (npm package)** → use for implementing UI animation: scroll-linked effects, reveals, parallax, overlay/panel transitions, hover micro-interactions. Do NOT use it for the three.js canvas or section pins — that stays GSAP.
+- Pure logic/content/backend tasks → no design skill needed.
+
+## Output protocol — every time you present work to the user
+1. Run the site locally (`npm run dev`, background) and GIVE THE LOCALHOST URL in your final message — the user always wants to preview in the browser.
+2. Verify the background/scroll animation is smooth and NOT heavy (watch for dropped frames, long tasks, jank at 390px width) before presenting.
+3. Quality bar: "award-winning" (Awwwards-level) — polished, pro, AI-futuristic. Never present something that looks default or templated.
 
 ## Before any implementation
 1. Read the relevant plan section; inspect the files you'll touch and their imports.

@@ -1,6 +1,7 @@
 /**
- * Qubitrix Lab — applied R&D threads. Honest framing (plan §5):
- * quantum is the metaphor and the ambition, never a hardware claim.
+ * The Lab — the technology domains orbiting every Qubitrix build.
+ * This section shows breadth of machinery, not a menu of services
+ * (services live in Capabilities). Honest framing (plan §5).
  */
 export interface LabThread {
   id: number;
@@ -11,24 +12,24 @@ export interface LabThread {
 }
 
 export const labIntro = {
-  kicker: "QUBITRIX LAB",
-  heading: "Where we push past current limits.",
-  sub: "Open research threads we run between client builds — the ideas that become next year's systems.",
+  kicker: "ACTIVE STACK",
+  heading: "The machinery behind every build.",
+  sub: "Technology domains in constant orbit around your system — each one battle-tested on real client work before it ships.",
 };
 
 export const labThreads: LabThread[] = [
   {
     id: 1,
-    title: "Agent Swarms",
+    title: "LLM Orchestration",
     status: "ACTIVE",
-    line: "Teams of specialized agents negotiating a shared goal.",
+    line: "Claude, GPT, and Gemini routed to whichever model each task deserves.",
     relatedIds: [2, 6],
   },
   {
     id: 2,
-    title: "Eval Harnesses",
+    title: "RAG & Memory",
     status: "ACTIVE",
-    line: "Measuring AI output quality before your customers do.",
+    line: "Retrieval that stays accurate as your data grows messy.",
     relatedIds: [1, 4],
   },
   {
@@ -40,9 +41,9 @@ export const labThreads: LabThread[] = [
   },
   {
     id: 4,
-    title: "RAG Architectures",
+    title: "Evals & Guardrails",
     status: "ACTIVE",
-    line: "Retrieval that stays accurate as your data grows messy.",
+    line: "Measuring AI output quality before your customers do.",
     relatedIds: [2, 5],
   },
   {
@@ -54,9 +55,9 @@ export const labThreads: LabThread[] = [
   },
   {
     id: 6,
-    title: "Autonomous Research",
+    title: "Agent Swarms",
     status: "EXPLORING",
-    line: "Systems that read the market and brief you at sunrise.",
+    line: "Teams of specialized agents negotiating a shared goal.",
     relatedIds: [1, 3],
   },
 ];

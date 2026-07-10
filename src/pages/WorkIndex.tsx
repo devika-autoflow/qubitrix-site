@@ -25,6 +25,16 @@ export default function WorkIndex() {
               onClick={() => navigate(`/work/${w.slug}`)}
               ariaLabel={`Open case study: ${w.title}`}
             >
+              {w.images?.[0] && (
+                <div className="-mx-7 -mt-7 mb-6 overflow-hidden rounded-t-3xl border-b hairline">
+                  <img
+                    src={w.images[0].src}
+                    alt={w.images[0].alt}
+                    loading="lazy"
+                    className="h-40 w-full object-cover object-left-top"
+                  />
+                </div>
+              )}
               <p className="hud-label">{w.index} — {w.kind}</p>
               <h2 className="metal-text font-display mt-4 text-xl font-semibold">{w.title}</h2>
               <p className="mt-2 text-sm leading-relaxed text-silver-400">{w.outcome}</p>

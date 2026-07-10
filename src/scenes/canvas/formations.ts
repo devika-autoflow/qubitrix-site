@@ -3,7 +3,7 @@
  * World space: camera at z=6, useful field ≈ x∈[-4.5,4.5] y∈[-2.6,2.6].
  *
  * Formation order drives the scroll journey (plan §10):
- * 0 Q-mark → 1 data stream → 2 neural lattice → 3 orbital → 4 starfield → 5 aurora
+ * 0 Q-mark → 1 data stream → 2 black hole → 3 orbital → 4 starfield → 5 aurora
  */
 
 const rand = (a = 1, b?: number) =>
@@ -103,20 +103,56 @@ export function streamFormation(count: number): Float32Array {
 }
 
 /* ------------------------------------------------ */
-/* 2 — Neural lattice (shell-biased sphere)          */
+/* 2 — Black hole (photon ring + accretion disk)     */
 /* ------------------------------------------------ */
-export function latticeFormation(count: number): Float32Array {
+export function blackHoleFormation(count: number): Float32Array {
   const out = new Float32Array(count * 3);
-  for (let i = 0; i < count; i++) {
-    // random direction
-    const u = Math.random() * 2 - 1;
-    const phi = Math.random() * Math.PI * 2;
-    const sq = Math.sqrt(1 - u * u);
-    // bias radius toward the shell for a "network" silhouette
-    const r = 2.1 * Math.pow(Math.random(), 0.28);
-    out[i * 3] = sq * Math.cos(phi) * r * 1.35;
-    out[i * 3 + 1] = u * r * 0.85;
-    out[i * 3 + 2] = sq * Math.sin(phi) * r;
+  const tilt = 1.08; // disk pitched toward the camera — Interstellar silhouette
+  const ct = Math.cos(tilt);
+  const st = Math.sin(tilt);
+
+  let i = 0;
+
+  // photon ring — the tight, bright halo hugging the event horizon
+  const ringCount = Math.floor(count * 0.16);
+  for (; i < ringCount; i++) {
+    const a = Math.random() * Math.PI * 2;
+    const r = 0.78 + softRand() * 0.045;
+    out[i * 3] = Math.cos(a) * r;
+    out[i * 3 + 1] = Math.sin(a) * r;
+    out[i * 3 + 2] = softRand() * 0.04;
+  }
+
+  // accretion disk — spiral-streaked matter, dense inside, fraying outward
+  const diskCount = Math.floor(count * 0.62);
+  for (const end = i + diskCount; i < end; i++) {
+    const r = 1.0 + 1.75 * Math.pow(Math.random(), 0.62);
+    // spiral streaks: angle correlates with radius, three arms
+    const arm = Math.floor(Math.random() * 3) * ((Math.PI * 2) / 3);
+    const a = arm + r * 1.9 + softRand() * 0.55;
+    const x = Math.cos(a) * r;
+    const z = Math.sin(a) * r;
+    const y = softRand() * 0.05 * (1 + (r - 1) * 0.4);
+    // tilt the disk plane toward the viewer
+    out[i * 3] = x;
+    out[i * 3 + 1] = y * ct - z * st * 0.5;
+    out[i * 3 + 2] = y * st + z * ct;
+  }
+
+  // faint infall haze + background stars
+  for (; i < count; i++) {
+    if (Math.random() < 0.5) {
+      // haze spiraling toward the void (never inside the horizon r<0.55)
+      const r = 0.9 + Math.random() * 2.1;
+      const a = Math.random() * Math.PI * 2;
+      out[i * 3] = Math.cos(a) * r;
+      out[i * 3 + 1] = Math.sin(a) * r * 0.45 + softRand() * 0.2;
+      out[i * 3 + 2] = softRand() * 0.8;
+    } else {
+      out[i * 3] = rand(-3.5, 3.5);
+      out[i * 3 + 1] = rand(-2.15, 2.15);
+      out[i * 3 + 2] = rand(-1.7, 0.7);
+    }
   }
   return out;
 }
@@ -194,11 +230,11 @@ export function auroraFormation(count: number): Float32Array {
   for (let i = 0; i < count; i++) {
     const x = rand(-4.8, 4.8);
     const band = Math.random() < 0.55 ? 1 : -1;
-    const base = Math.sin(x * 0.72) * 0.42 * band;
-    // thin ribbon, denser toward centerline, fading at edges
-    const spread = 0.16 * (1 - Math.min(1, Math.abs(x) / 5)) + 0.02;
+    const base = Math.sin(x * 0.72) * 0.62 * band;
+    // wider ribbon, denser toward centerline, fading at edges
+    const spread = 0.22 * (1 - Math.min(1, Math.abs(x) / 5)) + 0.03;
     out[i * 3] = x;
-    out[i * 3 + 1] = -0.55 + base + softRand() * spread * 2.2;
+    out[i * 3 + 1] = -0.3 + base + softRand() * spread * 2.4;
     out[i * 3 + 2] = softRand() * 0.5;
   }
   return out;

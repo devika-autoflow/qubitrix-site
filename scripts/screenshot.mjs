@@ -15,6 +15,8 @@ const ROUTES = [
   ["work", "/work"],
   ["work-detail", "/work/competitor-research-engine"],
   ["book", "/book"],
+  ["quantum", "/quantum"],
+  ["blog-post", "/blog/quantum-computing-plain-language"],
   ["service-overlay", "/services/ai-agents"],
   ["legal", "/legal/privacy"],
   ["404", "/nope"],

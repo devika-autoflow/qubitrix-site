@@ -1,12 +1,11 @@
 import { useEffect, useRef } from "react";
 import SectionHeading from "../../components/ui/SectionHeading";
 import { processIntro, processSteps } from "../../content/process";
-import { testimonials } from "../../content/testimonials";
 import { useReveal } from "../../lib/useReveal";
 import { gsap } from "../../lib/gsap";
 import { prefersReducedMotion } from "../../lib/caps";
 
-/** Scene 06 — natural scroll. Circuit line draws as it passes; then three quiet quotes. */
+/** Scene 06 — natural scroll. Circuit line draws as it passes. */
 export default function Process() {
   const ref = useRef<HTMLElement>(null);
   const lineRef = useRef<HTMLDivElement>(null);
@@ -70,19 +69,6 @@ export default function Process() {
         </ol>
       </div>
 
-      {/* Words — quiet, honest placeholders (plan §19) */}
-      <div className="mt-[16vh] grid gap-8 md:grid-cols-3">
-        {testimonials.map((t) => (
-          <figure key={t.name} data-reveal className="border-l hairline pl-5">
-            <blockquote className="text-[15px] leading-relaxed text-silver-100">
-              “{t.quote}”
-            </blockquote>
-            <figcaption className="mt-4 font-mono text-[11px] tracking-[0.12em] text-silver-600">
-              {t.name.toUpperCase()} — {t.role.toUpperCase()}
-            </figcaption>
-          </figure>
-        ))}
-      </div>
     </section>
   );
 }

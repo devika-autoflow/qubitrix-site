@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState, type FormEvent } from "react";
 import { site } from "../../content/site";
+import { getChatIdentity, newChatId } from "../../lib/chatSession";
 
 interface Msg {
   role: "user" | "assistant";
@@ -34,11 +35,26 @@ function demoReply(text: string): string {
   return "I can walk you through AI agents, chatbots, automation, or custom systems — or point you to the free consultation. What's eating your team's time?";
 }
 
+/** Pull a reply out of whatever shape the n8n webhook answers with. */
+function parseWebhookReply(data: unknown): string | undefined {
+  const first = Array.isArray(data) ? data[0] : data;
+  if (typeof first === "string") return first || undefined;
+  if (first && typeof first === "object") {
+    const o = first as Record<string, unknown>;
+    for (const key of ["reply", "output", "text", "message", "answer"]) {
+      if (typeof o[key] === "string" && o[key]) return o[key] as string;
+    }
+  }
+  return undefined;
+}
+
 export default function ConsolePanel({ onClose }: { onClose: () => void }) {
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [live, setLive] = useState<boolean | null>(null); // null = unknown yet
+  // one conversation id per console open; user/session ids persist in storage
+  const chatIdRef = useRef(newChatId());
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
@@ -63,21 +79,44 @@ export default function ConsolePanel({ onClose }: { onClose: () => void }) {
     setInput("");
     setBusy(true);
 
+    // n8n webhook first (full session context), netlify function next, demo last
     try {
-      const res = await fetch("/.netlify/functions/chat", {
+      if (!site.chatWebhookUrl) throw new Error("no webhook");
+      const identity = getChatIdentity();
+      const res = await fetch(site.chatWebhookUrl, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        // greeting is UI-only; the API needs user-first alternation
-        body: JSON.stringify({ messages: history.slice(1) }),
+        body: JSON.stringify({
+          message: trimmed,
+          history: history.slice(1),
+          chatId: chatIdRef.current,
+          ...identity,
+          page: window.location.pathname,
+          submittedAt: new Date().toISOString(),
+        }),
       });
       if (!res.ok) throw new Error(String(res.status));
-      const data = (await res.json()) as { reply?: string };
-      if (!data.reply) throw new Error("empty");
+      const reply = parseWebhookReply(await res.json().catch(() => undefined));
+      if (!reply) throw new Error("empty");
       setLive(true);
-      setMessages((m) => [...m, { role: "assistant", content: data.reply! }]);
+      setMessages((m) => [...m, { role: "assistant", content: reply }]);
     } catch {
-      setLive(false);
-      setMessages((m) => [...m, { role: "assistant", content: demoReply(trimmed) }]);
+      try {
+        const res = await fetch("/.netlify/functions/chat", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          // greeting is UI-only; the API needs user-first alternation
+          body: JSON.stringify({ messages: history.slice(1) }),
+        });
+        if (!res.ok) throw new Error(String(res.status));
+        const data = (await res.json()) as { reply?: string };
+        if (!data.reply) throw new Error("empty");
+        setLive(true);
+        setMessages((m) => [...m, { role: "assistant", content: data.reply! }]);
+      } catch {
+        setLive(false);
+        setMessages((m) => [...m, { role: "assistant", content: demoReply(trimmed) }]);
+      }
     } finally {
       setBusy(false);
     }

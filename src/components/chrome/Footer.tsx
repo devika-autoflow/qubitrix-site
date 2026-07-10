@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import QubitrixLogo from "../ui/QubitrixLogo";
+import SocialIcons from "../ui/SocialIcons";
 import { site } from "../../content/site";
 
 export default function Footer() {
@@ -19,6 +20,7 @@ export default function Footer() {
           <ul className="space-y-2.5 text-sm text-silver-400">
             <li><Link className="hover:text-silver-100" to="/work">Work</Link></li>
             <li><Link className="hover:text-silver-100" to="/book">Book a consultation</Link></li>
+            <li><Link className="hover:text-silver-100" to="/auth">Sign in</Link></li>
             <li><Link className="hover:text-silver-100" to="/legal/privacy">Privacy</Link></li>
             <li><Link className="hover:text-silver-100" to="/legal/terms">Terms</Link></li>
             <li><Link className="hover:text-silver-100" to="/legal/cookies">Cookies</Link></li>
@@ -45,14 +47,15 @@ export default function Footer() {
                 </a>
               </li>
             )}
-            <li>
-              <a className="hover:text-silver-100" href={site.linkedin} target="_blank" rel="noreferrer">
-                LinkedIn
-              </a>
-            </li>
-            <li className="pt-2 font-mono text-xs text-silver-600">{site.hours}</li>
-            <li className="font-mono text-xs text-silver-600">{site.location}</li>
+            {site.socials.map((s) => (
+              <li key={s.label}>
+                <a className="hover:text-silver-100" href={s.href} target="_blank" rel="noreferrer">
+                  {s.label}
+                </a>
+              </li>
+            ))}
           </ul>
+          <SocialIcons className="mt-5" />
         </div>
       </div>
 

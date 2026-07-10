@@ -22,7 +22,7 @@ export default function BookingForm({ source = "contact" }: { source?: string })
     if (!data.name?.trim()) errs.name = "Please add your name.";
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? ""))
       errs.email = "Please use a valid email.";
-    if (!data.goal?.trim()) errs.goal = "One line is enough — what should we build?";
+    if (!data.goal?.trim()) errs.goal = "One line is enough.";
     setErrors(errs);
     if (Object.keys(errs).length) return;
 
@@ -90,9 +90,9 @@ export default function BookingForm({ source = "contact" }: { source?: string })
       </div>
       <TextField label="Company (optional)" name="company" autoComplete="organization" />
       <TextArea
-        label="What should we build?"
+        label="Your message"
         name="goal"
-        placeholder="e.g. An agent that qualifies our inbound leads automatically"
+        placeholder="Tell us what you're building, or just say hello"
         error={errors.goal}
       />
       <div className="flex flex-wrap items-center gap-4 pt-1">

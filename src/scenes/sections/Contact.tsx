@@ -2,6 +2,7 @@ import { useRef } from "react";
 import { Link } from "react-router-dom";
 import SectionHeading from "../../components/ui/SectionHeading";
 import BookingForm from "../../features/booking/BookingForm";
+import SocialIcons from "../../components/ui/SocialIcons";
 import { site } from "../../content/site";
 import { useReveal } from "../../lib/useReveal";
 
@@ -17,10 +18,10 @@ export default function Contact() {
       className="relative z-10 mx-auto max-w-6xl px-5 pb-[10vh] pt-[18vh] sm:px-8"
     >
       <SectionHeading
-        index="07"
+        index="08"
         kicker="Contact"
-        heading="Build with us."
-        sub="A free 30-minute consultation. We'll map what should never be done by hand again."
+        heading="Send us a signal."
+        sub="A message is enough to start — or book a free 30-minute consultation and we'll map what should never be done by hand again."
       />
 
       <div
@@ -51,17 +52,9 @@ export default function Contact() {
                   </a>
                 </li>
               )}
-              <li>
-                <a
-                  href={site.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="text-silver-100 underline-offset-4 hover:underline"
-                >
-                  LinkedIn
-                </a>
-              </li>
             </ul>
+            <p className="hud-label mb-4 mt-8">Follow the signal</p>
+            <SocialIcons withEmail={false} withLabels />
             <div className="mt-8 space-y-1.5 border-t hairline pt-5">
               <p className="font-mono text-[11px] tracking-[0.12em] text-silver-600">
                 {site.hours}

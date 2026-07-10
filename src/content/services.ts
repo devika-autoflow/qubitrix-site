@@ -66,6 +66,40 @@ export const services: Service[] = [
     },
   },
   {
+    slug: "lead-generation",
+    title: "AI Lead Generation",
+    value: "Pipelines that find, score, and warm your next clients.",
+    tags: ["OUTREACH", "SCORING", "CRM"],
+    dossier: {
+      what: "Autonomous prospecting: scraping and enriching leads, scoring them against your ideal customer profile, and running personalized outreach that books calls onto your calendar.",
+      deliverables: [
+        "Lead sourcing and enrichment pipeline",
+        "ICP scoring model and routing",
+        "Personalized outreach sequences",
+        "CRM sync and reporting",
+      ],
+      stack: ["n8n", "Scraping APIs", "LLM scoring", "CRM integrations"],
+      timeline: "2–3 weeks",
+    },
+  },
+  {
+    slug: "content-engines",
+    title: "Content & Campaign Engines",
+    value: "Newsletters, posts, and campaigns drafted and shipped on schedule.",
+    tags: ["CONTENT", "CAMPAIGNS", "DISTRIBUTION"],
+    dossier: {
+      what: "Systems that curate sources, draft content in your voice, route it through your approval, and publish across channels — newsletters, social, and ad campaign variants.",
+      deliverables: [
+        "Curation and drafting pipeline",
+        "Voice and style tuning",
+        "Approval flow and scheduler",
+        "Multi-channel distribution",
+      ],
+      stack: ["n8n", "LLM drafting", "RSS/email APIs", "Social APIs"],
+      timeline: "2–3 weeks",
+    },
+  },
+  {
     slug: "custom-ai",
     title: "Custom AI Systems",
     value: "Purpose-built AI for problems off the shelf can't touch.",

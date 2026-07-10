@@ -5,7 +5,7 @@ import { gsap, ScrollTrigger } from "../../lib/gsap";
 import { prefersReducedMotion } from "../../lib/caps";
 import { scrollToTarget } from "../../lib/lenis";
 
-/** Scene 01 — pinned. The metallic Q holds while the headline breathes (plan §10). */
+/** Scene 01 — pinned. Copy holds the left; the Q formation owns the right. */
 export default function Hero() {
   const sectionRef = useRef<HTMLElement>(null);
   const contentRef = useRef<HTMLDivElement>(null);
@@ -42,40 +42,51 @@ export default function Hero() {
       id="hero"
       ref={sectionRef}
       className="relative z-10 flex min-h-screen items-center"
-      aria-label="Qubitrix — intelligence, engineered"
+      aria-label={`Qubitrix — ${site.tagline}`}
     >
-      <div ref={contentRef} className="mx-auto w-full max-w-6xl px-5 pt-16 sm:px-8">
-        <p data-hero-stagger className="hud-label">
-          <span className="text-volt-tint">01</span>
-          <span className="mx-3 inline-block h-px w-8 translate-y-[-3px] bg-white/15" aria-hidden="true" />
-          AI ENGINEERING STUDIO
-        </p>
+      <div
+        ref={contentRef}
+        className="mx-auto grid w-full max-w-[86rem] items-center gap-8 px-5 pt-16 sm:px-8 lg:grid-cols-[minmax(0,1.15fr)_minmax(0,1fr)] lg:gap-12 lg:px-10"
+      >
+        {/* Left — the thesis */}
+        <div>
+          <p data-hero-stagger className="hud-label">
+            <span className="text-volt-tint">01</span>
+            <span className="mx-3 inline-block h-px w-8 translate-y-[-3px] bg-white/15" aria-hidden="true" />
+            {site.heroKicker}
+          </p>
 
-        <h1
-          data-hero-stagger
-          className="metal-text font-display mt-6 max-w-4xl text-[clamp(2.9rem,8.4vw,6.4rem)] font-semibold leading-[0.98] tracking-tight"
-        >
-          Intelligence,
-          <br />
-          engineered
-          <span className="qubit-dot ml-[0.12em]" aria-hidden="true" />
-        </h1>
+          <h1
+            data-hero-stagger
+            className="metal-text font-display mt-6 max-w-4xl text-[clamp(2.6rem,7vw,5.4rem)] font-semibold leading-[1.02] tracking-tight"
+          >
+            <span className="whitespace-nowrap">{site.heroHeadline[0]}</span>
+            <br />
+            <span className="whitespace-nowrap">
+              {site.heroHeadline[1]}
+              <span className="qubit-dot ml-[0.12em]" aria-hidden="true" />
+            </span>
+          </h1>
 
-        <p
-          data-hero-stagger
-          className="mt-7 max-w-md text-base leading-relaxed text-silver-400 sm:text-lg"
-        >
-          {site.subline}
-        </p>
+          <p
+            data-hero-stagger
+            className="mt-7 max-w-md text-base leading-relaxed text-silver-400 sm:text-lg"
+          >
+            {site.subline}
+          </p>
 
-        <div data-hero-stagger className="mt-10 flex flex-wrap items-center gap-4">
-          <Button variant="primary" onClick={() => scrollToTarget("#contact")}>
-            Book a consultation
-          </Button>
-          <Button variant="ghost" onClick={() => scrollToTarget("#capabilities")}>
-            Explore the system
-          </Button>
+          <div data-hero-stagger className="mt-10 flex flex-wrap items-center gap-4">
+            <Button variant="primary" onClick={() => scrollToTarget("#contact")}>
+              Book a consultation
+            </Button>
+            <Button variant="ghost" onClick={() => scrollToTarget("#capabilities")}>
+              Explore the system
+            </Button>
+          </div>
         </div>
+
+        {/* Right — reserved airspace: the particle Q composes here, unobstructed */}
+        <div className="hidden min-h-[520px] lg:block" aria-hidden="true" />
       </div>
 
       <div
