@@ -3,7 +3,6 @@ import {
   qFormation,
   streamFormation,
   blackHoleFormation,
-  orbitalFormation,
   starFormation,
   auroraFormation,
 } from "./formations";
@@ -11,20 +10,21 @@ import { dprClamp } from "../../lib/caps";
 
 /**
  * One persistent WebGL canvas for the whole journey (plan §9).
- * A single Points mesh morphs between six precomputed formations;
- * `setProgress(0..5)` — driven by ScrollTrigger — selects the blend.
+ * A single Points mesh morphs between five precomputed formations;
+ * `setProgress(0..4)` — driven by ScrollTrigger — selects the blend.
+ * Pacing (user decision, July 2026): each formation lives for TWO sections —
+ * it forms, stays fully built through both, then crumples into the next.
  */
 
 const VERT = /* glsl */ `
 attribute vec3 aQ;
 attribute vec3 aStream;
 attribute vec3 aBlackHole;
-attribute vec3 aOrbital;
 attribute vec3 aStar;
 attribute vec3 aAurora;
 attribute vec4 aSeed; // x: rand01, y: size, z: rand01, w: speed
 
-uniform float uProgress;   // 0..5 formation index
+uniform float uProgress;   // 0..4 formation index
 uniform float uTime;
 uniform float uIntro;      // 0→1 fade-in scatter
 uniform float uPixelRatio;
@@ -52,15 +52,6 @@ void main() {
   vec3 stream = aStream;
   stream.x = mod(stream.x + uTime * (0.6 + aSeed.w * 0.9), 12.0) - 6.0;
 
-  // orbital: rings rotate at seed-dependent speed
-  float ang = uTime * (0.05 + aSeed.w * 0.11);
-  float ca = cos(ang), sa = sin(ang);
-  vec3 orbital = vec3(
-    aOrbital.x * ca - aOrbital.z * sa,
-    aOrbital.y,
-    aOrbital.x * sa + aOrbital.z * ca
-  );
-
   // aurora: traveling wave — big, slow, unmistakable
   vec3 aurora = aAurora;
   aurora.y += sin(aurora.x * 0.9 + uTime * 0.7 + aSeed.x * 6.283) * 0.32
@@ -81,10 +72,9 @@ void main() {
   /* ---- pick blend pair ---- */
   vec3 A = q;      vec3 B = stream;   vec3 cA = SILVER;               vec3 cB = mix(DIM, PLASMA, aSeed.x * 0.5);
   if (fi > 0.5) { A = stream;  B = blackHole; cA = mix(DIM, PLASMA, aSeed.x * 0.5); cB = mix(SILVER, VOLT, aSeed.x * 0.65); }
-  if (fi > 1.5) { A = blackHole; B = orbital; cA = mix(SILVER, VOLT, aSeed.x * 0.65); cB = mix(VOLT, PLASMA, aSeed.z); }
-  if (fi > 2.5) { A = orbital; B = star;     cA = mix(VOLT, PLASMA, aSeed.z);        cB = DIM; }
-  if (fi > 3.5) { A = star;    B = aurora;   cA = DIM;  cB = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); }
-  if (fi > 4.5) { A = aurora;  B = aurora;   cA = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); cB = cA; }
+  if (fi > 1.5) { A = blackHole; B = star;   cA = mix(SILVER, VOLT, aSeed.x * 0.65); cB = mix(DIM, SILVER, aSeed.z * 0.5); }
+  if (fi > 2.5) { A = star;    B = aurora;   cA = mix(DIM, SILVER, aSeed.z * 0.5);  cB = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); }
+  if (fi > 3.5) { A = aurora;  B = aurora;   cA = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); cB = cA; }
 
   vec3 pos = mix(A, B, ft);
   pos.x += uXShift;
@@ -106,7 +96,8 @@ void main() {
   float size = aSeed.y * (0.8 + aSeed.x * 1.0) * (1.0 + glow * 0.35);
   gl_PointSize = max(size * uPixelRatio * (9.0 / -mv.z), 1.0);
 
-  vAlpha = (0.13 + aSeed.z * 0.20 + glow * (0.06 + aSeed.z * 0.08)) * uIntro;
+  // slightly brighter floor — formations must stay readable in blank space
+  vAlpha = (0.16 + aSeed.z * 0.22 + glow * (0.06 + aSeed.z * 0.08)) * uIntro;
 }
 `;
 
@@ -165,7 +156,6 @@ export class SceneManager {
     set("aQ", qArr);
     set("aStream", streamFormation(count));
     set("aBlackHole", blackHoleFormation(count));
-    set("aOrbital", orbitalFormation(count));
     set("aStar", starFormation(count));
     set("aAurora", auroraFormation(count));
 
@@ -243,7 +233,7 @@ export class SceneManager {
   private meshScale = 1;
 
   /** Formations drift into whichever side of the layout is empty (desktop). */
-  private static SHIFT_TARGETS = [0, 0, 1.15, -1.45, 0, 0]; // Q stream blackhole orbital star aurora
+  private static SHIFT_TARGETS = [0, 0, 1.3, 0, 0]; // Q stream blackhole star aurora
   private wide = window.innerWidth >= 1024;
   private progress = 0;
   private targetProgress = 0;
@@ -254,7 +244,7 @@ export class SceneManager {
       return;
     }
     const p = this.progress;
-    const i = Math.min(4, Math.floor(p));
+    const i = Math.min(3, Math.floor(p));
     const t = p - i;
     const s = t * t * (3 - 2 * t);
     const T = SceneManager.SHIFT_TARGETS;
@@ -267,12 +257,12 @@ export class SceneManager {
   };
 
   /**
-   * 0..5 continuous formation index, driven by ScrollTrigger.
+   * 0..4 continuous formation index, driven by ScrollTrigger.
    * Only sets the target — the render loop glides toward it, so fast
    * scrolling never snaps a formation.
    */
   setProgress(p: number) {
-    this.targetProgress = Math.max(0, Math.min(5, p));
+    this.targetProgress = Math.max(0, Math.min(4, p));
   }
 
   /** Intro convergence 0..1 (LogoIntro drives this once). */

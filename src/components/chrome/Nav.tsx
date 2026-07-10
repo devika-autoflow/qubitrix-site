@@ -5,6 +5,7 @@ import Button from "../ui/Button";
 import QuantumButton from "./QuantumButton";
 import { nav, site } from "../../content/site";
 import { scrollToTarget } from "../../lib/lenis";
+import { useSession, displayName } from "../../lib/useSession";
 
 /**
  * Fixed top bar — hides on scroll-down, returns on scroll-up (plan §11).
@@ -16,6 +17,7 @@ export default function Nav() {
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
   const onHome = pathname === "/" || pathname.startsWith("/services");
+  const session = useSession();
 
   useEffect(() => {
     let last = window.scrollY;
@@ -64,15 +66,30 @@ export default function Nav() {
 
             <div className="hidden items-center gap-4 md:flex">
               <QuantumButton />
-              <Link
-                to="/auth"
-                className="text-sm text-silver-400 transition-colors hover:text-silver-100"
-              >
-                Log in
-              </Link>
-              <Button as="a" variant="ghost" href="/auth?mode=signup" className="!px-5 !py-2.5">
-                Sign up
-              </Button>
+              {session ? (
+                <Link
+                  to="/auth"
+                  className="group flex items-center gap-2.5 text-sm text-silver-300 transition-colors hover:text-silver-100"
+                  aria-label="Your account"
+                >
+                  <span className="flex h-7 w-7 items-center justify-center rounded-full border border-white/12 bg-obsidian-1/80 font-mono text-[11px] text-volt-tint">
+                    {displayName(session).charAt(0)}
+                  </span>
+                  {displayName(session)}
+                </Link>
+              ) : (
+                <>
+                  <Link
+                    to="/auth"
+                    className="text-sm text-silver-400 transition-colors hover:text-silver-100"
+                  >
+                    Log in
+                  </Link>
+                  <Button as="a" variant="ghost" href="/auth?mode=signup" className="!px-5 !py-2.5">
+                    Sign up
+                  </Button>
+                </>
+              )}
               {site.calendlyUrl ? (
                 <Button as="a" variant="primary" href={site.calendlyUrl} target="_blank" rel="noreferrer">
                   Book a call
@@ -131,12 +148,20 @@ export default function Nav() {
                   Book a call
                 </Button>
               )}
-              <Button as="a" variant="ghost" href="/auth" onClick={() => setOpen(false)}>
-                Log in
-              </Button>
-              <Button as="a" variant="ghost" href="/auth?mode=signup" onClick={() => setOpen(false)}>
-                Sign up
-              </Button>
+              {session ? (
+                <Button as="a" variant="ghost" href="/auth" onClick={() => setOpen(false)}>
+                  {displayName(session)} — account
+                </Button>
+              ) : (
+                <>
+                  <Button as="a" variant="ghost" href="/auth" onClick={() => setOpen(false)}>
+                    Log in
+                  </Button>
+                  <Button as="a" variant="ghost" href="/auth?mode=signup" onClick={() => setOpen(false)}>
+                    Sign up
+                  </Button>
+                </>
+              )}
             </li>
           </ul>
         </div>

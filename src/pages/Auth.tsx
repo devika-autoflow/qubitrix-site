@@ -5,6 +5,7 @@ import AuthShell, { AuthNotice } from "../features/auth/AuthShell";
 import Button from "../components/ui/Button";
 import { TextField } from "../components/ui/Field";
 import { getSupabase } from "../lib/supabase";
+import { displayName } from "../lib/useSession";
 
 type Mode = "signin" | "signup";
 
@@ -78,6 +79,7 @@ export default function Auth() {
     const form = new FormData(e.currentTarget);
     const email = String(form.get("email") ?? "").trim();
     const password = String(form.get("password") ?? "");
+    const fullName = String(form.get("fullName") ?? "").trim();
     if (!email || !password) return;
 
     setBusy(true);
@@ -88,7 +90,11 @@ export default function Auth() {
       const { data, error: err } = await supabase.auth.signUp({
         email,
         password,
-        options: { emailRedirectTo: `${window.location.origin}/auth` },
+        options: {
+          emailRedirectTo: `${window.location.origin}/auth`,
+          // stored in user_metadata — the nav greets people by this name
+          data: fullName ? { full_name: fullName } : undefined,
+        },
       });
       if (err) setError(err.message);
       else if (!data.session)
@@ -101,8 +107,8 @@ export default function Auth() {
     return (
       <AuthShell
         kicker="Access"
-        heading="You're signed in."
-        sub="This browser holds an active QUBITRIX session."
+        heading={`Welcome back, ${displayName(session)}.`}
+        sub="This browser holds an active QUBITRIX session — no need to sign in again."
       >
         <div className="rounded-xl border border-white/10 bg-obsidian-1/80 px-4 py-3">
           <p className="hud-label mb-1">Identity</p>
@@ -150,6 +156,16 @@ export default function Auth() {
       </div>
 
       <form onSubmit={(e) => void onSubmit(e)} className="space-y-5">
+        {mode === "signup" && (
+          <TextField
+            label="Name"
+            name="fullName"
+            type="text"
+            autoComplete="name"
+            placeholder="Your name"
+            required
+          />
+        )}
         <TextField
           label="Email"
           name="email"

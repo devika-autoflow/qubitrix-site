@@ -19,19 +19,21 @@ import ServiceOverlay from "../features/service-overlay/ServiceOverlay";
 import { ScrollTrigger } from "../lib/gsap";
 
 /**
- * Formation target per section (plan §10):
- * hero=Q(0) → shift=stream(1) → capabilities=blackhole(2) → lab=orbital(3)
- * → work=starfield(4) → process=starfield(4) → contact=aurora(5)
+ * Formation target per section — each formation lives for TWO sections
+ * (user decision, July 2026): it forms entering the first section, stays
+ * fully built through both, then crumples into the next formation.
+ * hero=Q(0) → shift=stream(1) → capabilities+lab=blackhole(2)
+ * → work+process=starfield(3) → testimonials+contact=aurora(4)
  */
 const JOURNEY: Array<[string, number]> = [
   ["#hero", 0],
   ["#shift", 1],
   ["#capabilities", 2],
-  ["#lab", 3],
-  ["#work", 4],
-  ["#process", 4],
-  ["#testimonials", 5],
-  ["#contact", 5],
+  ["#lab", 2],
+  ["#work", 3],
+  ["#process", 3],
+  ["#testimonials", 4],
+  ["#contact", 4],
 ];
 
 export default function Home() {
