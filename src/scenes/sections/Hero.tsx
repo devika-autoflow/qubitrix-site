@@ -58,7 +58,7 @@ export default function Hero() {
 
           <h1
             data-hero-stagger
-            className="metal-text font-display mt-6 max-w-4xl text-[clamp(2.6rem,7vw,5.4rem)] font-semibold leading-[1.02] tracking-tight"
+            className="metal-text font-display mt-6 max-w-4xl text-[clamp(2.1rem,4.7vw,4.2rem)] font-semibold leading-[1.02] tracking-tight"
           >
             <span className="whitespace-nowrap">{site.heroHeadline[0]}</span>
             <br />
@@ -77,10 +77,10 @@ export default function Hero() {
 
           <div data-hero-stagger className="mt-10 flex flex-wrap items-center gap-4">
             <Button variant="primary" onClick={() => scrollToTarget("#contact")}>
-              Book a consultation
+              {site.heroCtaPrimary}
             </Button>
-            <Button variant="ghost" onClick={() => scrollToTarget("#capabilities")}>
-              Explore the system
+            <Button variant="ghost" onClick={() => scrollToTarget("#impact")}>
+              {site.heroCtaSecondary}
             </Button>
           </div>
         </div>

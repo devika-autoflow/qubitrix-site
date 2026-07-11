@@ -13,11 +13,17 @@ export interface Service {
   };
 }
 
+export const capabilitiesIntro = {
+  kicker: "WHAT WE PROVIDE",
+  heading: "Complete AI Solutions for Your Business",
+  sub: "We don't just give you software. We build custom AI systems that do the work of full-time employees.",
+};
+
 export const services: Service[] = [
   {
     slug: "ai-agents",
-    title: "AI Agents",
-    value: "Autonomous systems that reason, decide, and act.",
+    title: "AI Employees",
+    value: "Tireless workers that read emails, process orders, and make decisions based on your rules.",
     tags: ["ORCHESTRATION", "TOOL USE", "MULTI-STEP"],
     dossier: {
       what: "Agents that own a job end-to-end — researching, qualifying, drafting, and executing across your tools without a human in the loop.",
@@ -33,8 +39,8 @@ export const services: Service[] = [
   },
   {
     slug: "ai-chatbots",
-    title: "AI Chatbots",
-    value: "Support and sales that answer in seconds, 24/7.",
+    title: "24/7 Support",
+    value: "Instantly answer customers on WhatsApp, IG, and web. Never miss a message.",
     tags: ["RAG", "MULTICHANNEL", "HANDOFF"],
     dossier: {
       what: "Conversational AI trained on your business — website, WhatsApp, and email — that resolves queries and books calls while you sleep.",
@@ -50,8 +56,8 @@ export const services: Service[] = [
   },
   {
     slug: "automation",
-    title: "Workflow Automation",
-    value: "Your operations, running while you sleep.",
+    title: "Business Automation",
+    value: "Automate invoices, lead routing, and daily operations. Eliminate busywork.",
     tags: ["N8N", "INTEGRATIONS", "PIPELINES"],
     dossier: {
       what: "End-to-end automation of the repetitive work — lead capture, follow-ups, reporting, scraping, content pipelines — wired across the tools you already use.",
@@ -67,8 +73,8 @@ export const services: Service[] = [
   },
   {
     slug: "lead-generation",
-    title: "AI Lead Generation",
-    value: "Pipelines that find, score, and warm your next clients.",
+    title: "AI Lead Gen",
+    value: "Find, score, and warm up potential clients. Auto-book meetings on your calendar.",
     tags: ["OUTREACH", "SCORING", "CRM"],
     dossier: {
       what: "Autonomous prospecting: scraping and enriching leads, scoring them against your ideal customer profile, and running personalized outreach that books calls onto your calendar.",
@@ -84,8 +90,8 @@ export const services: Service[] = [
   },
   {
     slug: "content-engines",
-    title: "Content & Campaign Engines",
-    value: "Newsletters, posts, and campaigns drafted and shipped on schedule.",
+    title: "Content Engine",
+    value: "Blogs, newsletters, and social posts researched, written, and published on autopilot.",
     tags: ["CONTENT", "CAMPAIGNS", "DISTRIBUTION"],
     dossier: {
       what: "Systems that curate sources, draft content in your voice, route it through your approval, and publish across channels — newsletters, social, and ad campaign variants.",
@@ -101,8 +107,8 @@ export const services: Service[] = [
   },
   {
     slug: "custom-ai",
-    title: "Custom AI Systems",
-    value: "Purpose-built AI for problems off the shelf can't touch.",
+    title: "Custom AI",
+    value: "Have a unique bottleneck? We build bespoke AI tools tailored exactly to your workflow.",
     tags: ["BESPOKE", "PIPELINES", "EVALS"],
     dossier: {
       what: "When a template won't cut it: custom data pipelines, evaluation harnesses, fine-tuned behaviors, and AI products designed around your exact constraints.",

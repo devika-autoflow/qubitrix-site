@@ -1,5 +1,4 @@
 import { useEffect } from "react";
-import { useParams } from "react-router-dom";
 import SceneCanvas, { getScene } from "../scenes/canvas/SceneCanvas";
 import LogoIntro from "../components/chrome/LogoIntro";
 import Nav from "../components/chrome/Nav";
@@ -7,38 +6,34 @@ import ProgressRail from "../components/chrome/ProgressRail";
 import ScrollAura from "../components/chrome/ScrollAura";
 import Footer from "../components/chrome/Footer";
 import Hero from "../scenes/sections/Hero";
-import Shift from "../scenes/sections/Shift";
 import Capabilities from "../scenes/sections/Capabilities";
-import Lab from "../scenes/sections/Lab";
-import Work from "../scenes/sections/Work";
+import Impact from "../scenes/sections/Impact";
+import Edge from "../scenes/sections/Edge";
 import Process from "../scenes/sections/Process";
-import Testimonials from "../scenes/sections/Testimonials";
+import Proof from "../scenes/sections/Proof";
+import Faq from "../scenes/sections/Faq";
 import Contact from "../scenes/sections/Contact";
 import CosmicLayer from "../components/chrome/CosmicLayer";
-import ServiceOverlay from "../features/service-overlay/ServiceOverlay";
 import { ScrollTrigger } from "../lib/gsap";
 
 /**
- * Formation target per section — each formation lives for TWO sections
- * (user decision, July 2026): it forms entering the first section, stays
- * fully built through both, then crumples into the next formation.
- * hero=Q(0) → shift=stream(1) → capabilities+lab=orbital(2)
- * → work+process=starfield(3) → testimonials+contact=aurora(4)
+ * Formation target per section — each formation lives for roughly two
+ * sections: it forms entering the first, stays fully built, then crumples
+ * into the next formation. hero=Q(0) → capabilities=stream(1)
+ * → impact+edge=orbital(2) → process+proof=starfield(3) → faq+contact=aurora(4)
  */
 const JOURNEY: Array<[string, number]> = [
   ["#hero", 0],
-  ["#shift", 1],
-  ["#capabilities", 2],
-  ["#lab", 2],
-  ["#work", 3],
+  ["#capabilities", 1],
+  ["#impact", 2],
+  ["#edge", 2],
   ["#process", 3],
-  ["#testimonials", 4],
+  ["#proof", 3],
+  ["#faq", 4],
   ["#contact", 4],
 ];
 
 export default function Home() {
-  const { slug } = useParams<{ slug?: string }>();
-
   // Drive the canvas through the journey. Created after children mount
   // so section pins are already in place, then refreshed once.
   useEffect(() => {
@@ -85,18 +80,16 @@ export default function Home() {
 
       <main id="main">
         <Hero />
-        <Shift />
         <Capabilities />
-        <Lab />
-        <Work />
+        <Impact />
+        <Edge />
         <Process />
-        <Testimonials />
+        <Proof />
+        <Faq />
         <Contact />
       </main>
 
       <Footer />
-
-      {slug && <ServiceOverlay slug={slug} />}
     </>
   );
 }

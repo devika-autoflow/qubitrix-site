@@ -13,11 +13,11 @@ mkdirSync(OUT, { recursive: true });
 const ROUTES = [
   ["home", "/"],
   ["work", "/work"],
-  ["work-detail", "/work/competitor-research-engine"],
+  ["work-detail", "/work/instagram-dm-engine"],
   ["book", "/book"],
   ["quantum", "/quantum"],
   ["blog-post", "/blog/quantum-computing-plain-language"],
-  ["service-overlay", "/services/ai-agents"],
+  ["service-page", "/services/ai-agents"],
   ["legal", "/legal/privacy"],
   ["404", "/nope"],
 ];

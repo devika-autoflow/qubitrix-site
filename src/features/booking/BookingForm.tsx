@@ -1,9 +1,17 @@
 import { useState, type FormEvent } from "react";
-import { TextField, TextArea } from "../../components/ui/Field";
+import { TextField, TextArea, SelectField } from "../../components/ui/Field";
 import Button from "../../components/ui/Button";
 import { site } from "../../content/site";
 
 type Status = "idle" | "sending" | "sent" | "error";
+
+const TIMEWASTERS = [
+  "Customer support",
+  "Lead generation",
+  "Data entry & admin",
+  "Content",
+  "Other",
+];
 
 /**
  * Primary conversion path (plan §13): POST to the n8n webhook when configured,
@@ -22,7 +30,7 @@ export default function BookingForm({ source = "contact" }: { source?: string })
     if (!data.name?.trim()) errs.name = "Please add your name.";
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? ""))
       errs.email = "Please use a valid email.";
-    if (!data.goal?.trim()) errs.goal = "One line is enough.";
+    if (!data.timewaster) errs.timewaster = "Pick the closest match.";
     setErrors(errs);
     if (Object.keys(errs).length) return;
 
@@ -50,10 +58,10 @@ export default function BookingForm({ source = "contact" }: { source?: string })
     } else {
       // mailto fallback — still a working lead path with zero config
       const body = encodeURIComponent(
-        `Name: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company || "—"}\n\nGoal:\n${data.goal}`
+        `Name: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company || "—"}\nBiggest time-waster: ${data.timewaster}\n\nNotes:\n${data.goal || "—"}`
       );
       window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
-        "Consultation request — Qubitrix"
+        "Strategy call request — Qubitrix"
       )}&body=${body}`;
       setStatus("sent");
     }
@@ -88,16 +96,24 @@ export default function BookingForm({ source = "contact" }: { source?: string })
           error={errors.email}
         />
       </div>
-      <TextField label="Company (optional)" name="company" autoComplete="organization" />
+      <div className="grid gap-5 sm:grid-cols-2">
+        <TextField label="Company (optional)" name="company" autoComplete="organization" />
+        <SelectField
+          label="Your biggest time-waster?"
+          name="timewaster"
+          options={TIMEWASTERS}
+          placeholder="Select the closest match"
+          error={errors.timewaster}
+        />
+      </div>
       <TextArea
-        label="Your message"
+        label="Anything else? (optional)"
         name="goal"
         placeholder="Tell us what you're building, or just say hello"
-        error={errors.goal}
       />
       <div className="flex flex-wrap items-center gap-4 pt-1">
         <Button variant="primary" type="submit" disabled={status === "sending"}>
-          {status === "sending" ? "Transmitting…" : "Request free consultation"}
+          {status === "sending" ? "Transmitting…" : "Book my free strategy call"}
         </Button>
         {status === "error" && (
           <p className="text-xs text-err" role="alert">

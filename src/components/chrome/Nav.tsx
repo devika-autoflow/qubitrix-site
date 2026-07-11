@@ -16,7 +16,7 @@ export default function Nav() {
   const [solid, setSolid] = useState(false);
   const [open, setOpen] = useState(false);
   const { pathname } = useLocation();
-  const onHome = pathname === "/" || pathname.startsWith("/services");
+  const onHome = pathname === "/";
   const session = useSession();
 
   useEffect(() => {
@@ -131,7 +131,7 @@ export default function Nav() {
                   onClick={() => goTo(item.href)}
                   className="flex items-baseline gap-4 text-left"
                 >
-                  <span className="hud-label text-volt-tint">0{i + 2}</span>
+                  <span className="hud-label text-volt-tint">{String(i + 1).padStart(2, "0")}</span>
                   <span className="metal-text font-display text-3xl font-semibold">
                     {item.label}
                   </span>

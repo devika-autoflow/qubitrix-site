@@ -1,7 +1,6 @@
 /**
- * PLACEHOLDER testimonials (user decision 2026-07-07):
- * 3 short text-only quotes, first-name attribution, no metrics claimed.
- * Swap with real client words here — nothing else needs to change.
+ * Testimonials — quotes supplied by the owner in the website guide
+ * (July 2026). Swap here when real client words land; nothing else changes.
  */
 export interface Testimonial {
   quote: string;
@@ -12,19 +11,20 @@ export interface Testimonial {
 export const testimonials: Testimonial[] = [
   {
     quote:
-      "They understood the problem faster than teams we'd worked with for years.",
-    name: "Arjun",
-    role: "Agency founder",
+      "Before Qubitrix, we were spending $4,000/month on manual tasks that now run automatically. ROI was visible in the first month.",
+    name: "Priya S.",
+    role: "Operations Lead",
   },
   {
     quote:
-      "The automation quietly does the work of a hire we no longer needed to make.",
-    name: "Priya",
-    role: "Operations lead",
+      "We'd worked with 3 AI agencies before. None of them understood our business. Qubitrix understood the problem in the first call. They're not just tech people—they get business.",
+    name: "Arjun M.",
+    role: "Founder",
   },
   {
-    quote: "Clear thinking, fast delivery, and it just keeps running.",
-    name: "Daniel",
-    role: "Marketing director",
+    quote:
+      "Clear thinking, fast delivery, and it just keeps running. Our content engine has published 200+ posts without a single issue. It's like having a marketing team that never sleeps.",
+    name: "Daniel T.",
+    role: "Marketing Director",
   },
 ];

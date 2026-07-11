@@ -19,9 +19,9 @@ export default function Contact() {
     >
       <SectionHeading
         index="08"
-        kicker="Contact"
-        heading="Send us a signal."
-        sub="A message is enough to start — or book a free 30-minute consultation and we'll map what should never be done by hand again."
+        kicker="FINAL CALL TO ACTION"
+        heading="Let's Put Your Business on Autopilot."
+        sub="Book a free 30-minute strategy call. No pressure, just clear answers on what you can automate and how much you'll save."
       />
 
       <div

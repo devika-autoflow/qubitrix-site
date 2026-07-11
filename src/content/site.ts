@@ -7,20 +7,22 @@ export const site = {
   domain: "https://qubitrixai.com",
   tagline: "The next state of intelligence.",
   /** Hero headline, one entry per display line. */
-  heroHeadline: ["The next state", "of intelligence"],
-  heroKicker: "AI ENGINEERING STUDIO",
+  heroHeadline: ["Your Business,", "Running on Autopilot"],
+  heroKicker: "NEXT-GENERATION AI AUTOMATION",
   subline:
-    "An AI engineering studio building from first principles — agents, automation, and custom AI systems that work while the world sleeps.",
+    "We build intelligent AI systems that work 24/7. From answering customers to finding leads and handling operations. You save thousands every month, and your business runs smoothly while you sleep.",
+  heroCtaPrimary: "Book a Free Strategy Call",
+  heroCtaSecondary: "See Our Pricing & ROI",
+  /** Footer brand line. */
+  footerLine: "Pioneering the physics of business automation.",
 
-  email: "devika@qubitrixai.com",
+  email: "info@qubitrixai.com",
 
   // TODO(owner): add WhatsApp number in international format, e.g. "+91XXXXXXXXXX"
   whatsapp: "" as string,
 
   hours: "Mon–Sun · 9:00–21:00 IST",
   location: "Remote · Worldwide",
-
-  linkedin: "https://www.linkedin.com/in/devika-nr-b84010369/",
 
   /** Social channels — shown in Contact and Footer. */
   socials: [
@@ -39,21 +41,24 @@ export const site = {
   calendlyUrl: import.meta.env.VITE_CALENDLY_URL as string | undefined,
 } as const;
 
+/** The 8 sections of the site, in order. Nav and rail derive from this. */
 export const nav = [
-  { label: "About", href: "#shift" },
+  { label: "Home", href: "#hero" },
   { label: "Services", href: "#capabilities" },
-  { label: "Active Stack", href: "#lab" },
-  { label: "Portfolio", href: "#work" },
+  { label: "Financial Impact", href: "#impact" },
+  { label: "Quantum Edge", href: "#edge" },
   { label: "Process", href: "#process" },
+  { label: "Proof", href: "#proof" },
+  { label: "FAQ", href: "#faq" },
 ] as const;
 
 export const sections = [
-  { index: "01", id: "hero", label: "Qubitrix" },
-  { index: "02", id: "shift", label: "The Shift" },
-  { index: "03", id: "capabilities", label: "Capabilities" },
-  { index: "04", id: "lab", label: "Active Stack" },
-  { index: "05", id: "work", label: "Work" },
-  { index: "06", id: "process", label: "Process" },
-  { index: "07", id: "testimonials", label: "Signals" },
+  { index: "01", id: "hero", label: "Home" },
+  { index: "02", id: "capabilities", label: "Services" },
+  { index: "03", id: "impact", label: "Financial Impact" },
+  { index: "04", id: "edge", label: "Quantum Edge" },
+  { index: "05", id: "process", label: "Process" },
+  { index: "06", id: "proof", label: "Proof" },
+  { index: "07", id: "faq", label: "FAQ" },
   { index: "08", id: "contact", label: "Contact" },
 ] as const;

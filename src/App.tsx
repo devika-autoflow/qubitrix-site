@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
+import ServicePage from "./pages/ServicePage";
 import WorkIndex from "./pages/WorkIndex";
 import WorkDetail from "./pages/WorkDetail";
 import Book from "./pages/Book";
@@ -15,12 +16,11 @@ import UpdatePassword from "./pages/UpdatePassword";
 import ConsoleLauncher from "./features/console/ConsoleLauncher";
 import { initLenis, getLenis } from "./lib/lenis";
 
-/** Scroll to top on route change — except the / ↔ /services overlay swap (plan §12). */
+/** Scroll to top on route change. */
 function ScrollManager() {
   const { pathname } = useLocation();
   useEffect(() => {
-    const isJourney = pathname === "/" || pathname.startsWith("/services");
-    if (!isJourney) {
+    if (pathname !== "/") {
       getLenis()?.scrollTo(0, { immediate: true });
       window.scrollTo(0, 0);
     }
@@ -38,7 +38,7 @@ export default function App() {
       <ScrollManager />
       <Routes>
         <Route path="/" element={<Home />} />
-        <Route path="/services/:slug" element={<Home />} />
+        <Route path="/services/:slug" element={<ServicePage />} />
         <Route path="/work" element={<WorkIndex />} />
         <Route path="/work/:slug" element={<WorkDetail />} />
         <Route path="/book" element={<Book />} />

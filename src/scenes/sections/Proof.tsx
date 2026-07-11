@@ -2,10 +2,14 @@ import { useRef, useState } from "react";
 import { Link } from "react-router-dom";
 import SectionHeading from "../../components/ui/SectionHeading";
 import { work, workIntro } from "../../content/work";
+import { testimonials } from "../../content/testimonials";
 import { useReveal } from "../../lib/useReveal";
 
-/** Scene 05 — natural scroll. Case dossiers as rows, preview follows (plan §10). */
-export default function Work() {
+/**
+ * Section 06 — Proof. Case studies (real builds with images, opening their
+ * detail pages) followed by testimonials.
+ */
+export default function Proof() {
   const ref = useRef<HTMLElement>(null);
   const [activeIdx, setActiveIdx] = useState(0);
   useReveal(ref);
@@ -14,17 +18,18 @@ export default function Work() {
 
   return (
     <section
-      id="work"
+      id="proof"
       ref={ref}
       className="relative z-10 mx-auto max-w-6xl px-5 py-[16vh] sm:px-8"
     >
       <SectionHeading
-        index="05"
+        index="06"
         kicker={workIntro.kicker}
         heading={workIntro.heading}
         sub={workIntro.sub}
       />
 
+      {/* Case studies — each row opens its full detail page */}
       <div className="mt-12 grid gap-10 lg:grid-cols-[1fr_320px]">
         <ol className="divide-y divide-white/6 border-y hairline">
           {work.map((w, i) => (
@@ -83,8 +88,32 @@ export default function Work() {
           to="/work"
           className="font-mono text-[11px] tracking-[0.14em] text-volt-tint transition-colors hover:text-silver-100"
         >
-          VIEW ALL BUILDS →
+          VIEW ALL CASE STUDIES →
         </Link>
+      </div>
+
+      {/* Testimonials — the human element */}
+      <div className="mt-20 grid gap-5 md:grid-cols-3">
+        {testimonials.map((t, i) => (
+          <figure
+            key={t.name}
+            data-reveal
+            className="os-panel flex h-full flex-col p-7 transition-all duration-300 hover:-translate-y-1 hover:shadow-[0_12px_44px_rgba(124,107,255,0.18)]"
+          >
+            <span className="hud-label text-volt-tint">SIGNAL 0{i + 1}</span>
+            <blockquote className="mt-5 flex-1">
+              <p className="font-display text-lg font-medium leading-relaxed text-silver-100">
+                “{t.quote}”
+              </p>
+            </blockquote>
+            <figcaption className="mt-6 border-t hairline pt-4">
+              <p className="text-sm font-medium text-silver-100">{t.name}</p>
+              <p className="mt-0.5 font-mono text-[11px] tracking-[0.12em] text-silver-600">
+                {t.role.toUpperCase()}
+              </p>
+            </figcaption>
+          </figure>
+        ))}
       </div>
     </section>
   );

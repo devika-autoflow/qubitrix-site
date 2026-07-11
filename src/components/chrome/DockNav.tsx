@@ -1,14 +1,14 @@
 import { useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Dock from "./Dock";
 import { nav } from "../../content/site";
 import { scrollToTarget } from "../../lib/lenis";
 
 const ICONS: Record<string, JSX.Element> = {
-  About: (
+  Home: (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
-      <circle cx="12" cy="8" r="3.4" />
-      <path d="M5 19.5c1.4-3.2 4-4.6 7-4.6s5.6 1.4 7 4.6" />
+      <path d="m4 10.5 8-6.5 8 6.5" strokeLinecap="round" strokeLinejoin="round" />
+      <path d="M6 9.5V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9.5" />
     </svg>
   ),
   Services: (
@@ -19,14 +19,28 @@ const ICONS: Record<string, JSX.Element> = {
       <rect x="13" y="13" width="7" height="7" rx="1.5" />
     </svg>
   ),
-  "Active Stack": (
+  "Quantum Edge": (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
       <path d="m12 3.5 8.5 4.5L12 12.5 3.5 8 12 3.5Z" strokeLinejoin="round" />
       <path d="m4.5 12.5 7.5 4 7.5-4" strokeLinejoin="round" />
       <path d="m4.5 16.5 7.5 4 7.5-4" strokeLinejoin="round" />
     </svg>
   ),
-  Portfolio: (
+  "Financial Impact": (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <path d="M4 20V4" />
+      <path d="M4 20h16" />
+      <path d="m7 14 4-4 3 3 5-6" strokeLinejoin="round" strokeLinecap="round" />
+    </svg>
+  ),
+  FAQ: (
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
+      <circle cx="12" cy="12" r="8.5" />
+      <path d="M9.6 9.4a2.4 2.4 0 1 1 3.3 2.9c-.7.4-.9.8-.9 1.7" strokeLinecap="round" />
+      <circle cx="12" cy="16.6" r="0.4" fill="currentColor" stroke="none" />
+    </svg>
+  ),
+  Proof: (
     <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6" aria-hidden="true">
       <rect x="3.5" y="7" width="17" height="12.5" rx="2" />
       <path d="M8.5 7V5.5A1.5 1.5 0 0 1 10 4h4a1.5 1.5 0 0 1 1.5 1.5V7" />
@@ -46,14 +60,6 @@ const ICONS: Record<string, JSX.Element> = {
       <path d="m4.5 7 7.5 6 7.5-6" />
     </svg>
   ),
-  Quantum: (
-    <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true">
-      <circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none" />
-      <ellipse cx="12" cy="12" rx="9" ry="3.8" />
-      <ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(60 12 12)" />
-      <ellipse cx="12" cy="12" rx="9" ry="3.8" transform="rotate(-60 12 12)" />
-    </svg>
-  ),
 };
 
 const SECTION_ITEMS = [...nav, { label: "Contact", href: "#contact" }] as const;
@@ -66,8 +72,7 @@ const SECTION_ITEMS = [...nav, { label: "Contact", href: "#contact" }] as const;
 export default function DockNav() {
   const [active, setActive] = useState<string | null>(null);
   const { pathname } = useLocation();
-  const navigate = useNavigate();
-  const onHome = pathname === "/" || pathname.startsWith("/services");
+  const onHome = pathname === "/";
 
   useEffect(() => {
     if (!onHome) {
@@ -94,20 +99,12 @@ export default function DockNav() {
     else window.location.assign(`/${href}`);
   };
 
-  const items = [
-    ...SECTION_ITEMS.map((item) => ({
-      icon: ICONS[item.label],
-      label: item.label,
-      onClick: () => goTo(item.href),
-      active: active === item.href,
-    })),
-    {
-      icon: ICONS.Quantum,
-      label: "Quantum",
-      onClick: () => navigate("/quantum"),
-      active: pathname.startsWith("/quantum"),
-    },
-  ];
+  const items = SECTION_ITEMS.map((item) => ({
+    icon: ICONS[item.label],
+    label: item.label,
+    onClick: () => goTo(item.href),
+    active: active === item.href,
+  }));
 
   return (
     <div className="fixed inset-x-0 top-[4.25rem] z-40 hidden justify-center md:flex">

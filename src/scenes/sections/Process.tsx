@@ -39,7 +39,12 @@ export default function Process() {
       ref={ref}
       className="relative z-10 mx-auto max-w-6xl px-5 py-[16vh] sm:px-8"
     >
-      <SectionHeading index="06" kicker={processIntro.kicker} heading={processIntro.heading} />
+      <SectionHeading
+        index="05"
+        kicker={processIntro.kicker}
+        heading={processIntro.heading}
+        sub={processIntro.sub}
+      />
 
       <div className="relative mt-14 pl-8 sm:pl-12">
         {/* the drawing circuit line */}
@@ -61,6 +66,9 @@ export default function Process() {
               <h3 className="metal-text font-display mt-1.5 text-xl font-semibold sm:text-2xl">
                 {step.title}
               </h3>
+              <p className="mt-2 font-mono text-[10px] tracking-[0.14em] text-volt-tint">
+                {step.meta}
+              </p>
               <p className="mt-2 max-w-md text-sm leading-relaxed text-silver-400">
                 {step.line}
               </p>

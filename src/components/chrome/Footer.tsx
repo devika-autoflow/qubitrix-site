@@ -10,8 +10,8 @@ export default function Footer() {
         <div>
           <QubitrixLogo markSize={22} />
           <p className="mt-4 max-w-xs text-sm leading-relaxed text-silver-600">
-            {site.tagline} AI agents, automation, and custom systems — built to
-            run your business around the clock.
+            {site.footerLine} AI agents, automation, and custom systems — built
+            to run your business around the clock.
           </p>
         </div>
 
