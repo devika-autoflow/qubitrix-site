@@ -1,36 +1,28 @@
 import * as THREE from "three";
-import {
-  qFormation,
-  streamFormation,
-  orbitalFormation,
-  starFormation,
-  auroraFormation,
-} from "./formations";
+import { qFormation, floatFormation } from "./formations";
 import { dprClamp } from "../../lib/caps";
 
 /**
- * One persistent WebGL canvas for the whole journey (plan §9).
- * A single Points mesh morphs between five precomputed formations;
- * `setProgress(0..4)` — driven by ScrollTrigger — selects the blend.
- * Pacing (user decision, July 2026): each formation lives for TWO sections —
- * it forms, stays fully built through both, then crumples into the next.
+ * One persistent WebGL canvas for the whole journey (user decision — replaces
+ * the earlier multi-shape morph). The Q assembles once in the Hero, then
+ * dissolves into an ambient floating particle field that stays that way,
+ * unchanged in shape, all the way to Contact. `setProgress` still receives a
+ * continuous section index from ScrollTrigger, but past the initial 0→1
+ * dissolve it drives ONLY a slow color-tint drift (TINT chain below) — never
+ * another shape change.
  */
 
 const VERT = /* glsl */ `
 attribute vec3 aQ;
-attribute vec3 aStream;
-attribute vec3 aOrbital;
-attribute vec3 aStar;
-attribute vec3 aAurora;
+attribute vec3 aFloat;
 attribute vec4 aSeed; // x: rand01, y: size, z: rand01, w: speed
 
-uniform float uProgress;   // 0..4 formation index
+uniform float uProgress;   // continuous section index — color tint only, past 1.0
 uniform float uTime;
 uniform float uIntro;      // 0→1 fade-in scatter
 uniform float uPixelRatio;
 uniform float uQShift;     // hero Q slides right of the headline on desktop
 uniform float uQScale;     // hero Q shrinks a touch on desktop for breathing room
-uniform float uXShift;     // per-section horizontal drift into blank space
 uniform vec2 uPointer;     // smoothed cursor in formation space (fine pointers)
 uniform float uHover;      // 0→1 once the cursor is live
 
@@ -43,48 +35,40 @@ const vec3 VOLT   = vec3(0.486, 0.420, 1.0);
 const vec3 PLASMA = vec3(0.243, 0.878, 0.941);
 
 void main() {
-  float fi = floor(uProgress);
-  float ft = fract(uProgress);
-  ft = ft * ft * (3.0 - 2.0 * ft); // smoothstep
-
-  /* ---- animated variants of formations ---- */
-  // stream: perpetual x-flow
-  vec3 stream = aStream;
-  stream.x = mod(stream.x + uTime * (0.6 + aSeed.w * 0.9), 12.0) - 6.0;
-
-  // orbital: rings rotate at seed-dependent speed
-  float ang = uTime * (0.05 + aSeed.w * 0.11);
-  float ca = cos(ang), sa = sin(ang);
-  vec3 orbital = vec3(
-    aOrbital.x * ca - aOrbital.z * sa,
-    aOrbital.y,
-    aOrbital.x * sa + aOrbital.z * ca
-  );
-
-  // aurora: traveling wave — big, slow, unmistakable
-  vec3 aurora = aAurora;
-  aurora.y += sin(aurora.x * 0.9 + uTime * 0.7 + aSeed.x * 6.283) * 0.32
-            + sin(aurora.x * 0.35 - uTime * 0.4 + aSeed.z * 6.283) * 0.18;
-
-  // star: living drift — the sky breathes through work and process
-  vec3 star = aStar;
-  star.x += sin(uTime * 0.11 + aSeed.x * 6.283) * 0.3;
-  star.y += cos(uTime * 0.08 + aSeed.z * 6.283) * 0.16;
+  // morph: 0 (Q, hero) → 1 (dissolved into the floating field). Fires once,
+  // over the hero→capabilities transition, then stays fully dissolved.
+  float morph = smoothstep(0.0, 1.0, clamp(uProgress, 0.0, 1.0));
 
   // q: breathing shimmer, offset toward the right on wide viewports
   vec3 q = aQ * uQScale * (1.0 + sin(uTime * 0.8 + aSeed.x * 6.283) * 0.004);
   q.x += uQShift;
 
-  /* ---- pick blend pair ---- */
-  vec3 A = q;      vec3 B = stream;   vec3 cA = SILVER;               vec3 cB = mix(DIM, PLASMA, aSeed.x * 0.5);
-  if (fi > 0.5) { A = stream;  B = orbital;  cA = mix(DIM, PLASMA, aSeed.x * 0.5); cB = mix(VOLT, PLASMA, aSeed.z); }
-  if (fi > 1.5) { A = orbital; B = star;     cA = mix(VOLT, PLASMA, aSeed.z);      cB = mix(DIM, SILVER, aSeed.z * 0.5); }
-  if (fi > 2.5) { A = star;    B = aurora;   cA = mix(DIM, SILVER, aSeed.z * 0.5);  cB = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); }
-  if (fi > 3.5) { A = aurora;  B = aurora;   cA = mix(VOLT, PLASMA, clamp(aAurora.x / 9.6 + 0.5, 0.0, 1.0)); cB = cA; }
+  // float: slow independent bob per particle — dust motes, not a current
+  vec3 flt = aFloat;
+  flt.x += sin(uTime * (0.05 + aSeed.w * 0.05) + aSeed.x * 6.283) * 0.4;
+  flt.y += cos(uTime * (0.045 + aSeed.z * 0.045) + aSeed.z * 6.283) * 0.28;
+  flt.z += sin(uTime * 0.04 + aSeed.x * 6.283) * 0.18;
 
-  vec3 pos = mix(A, B, ft);
-  pos.x += uXShift;
-  vColor = mix(cA, cB, ft);
+  vec3 pos = mix(q, flt, morph);
+
+  // tint: a slow color drift across sections, never a shape change.
+  // Each particle keeps its own subtle brightness (aSeed.z) under the tint.
+  float ti = floor(clamp(uProgress, 0.0, 7.0));
+  float tf = fract(uProgress);
+  tf = tf * tf * (3.0 - 2.0 * tf);
+
+  vec3 base = mix(DIM, SILVER, aSeed.z);
+  vec3 tA = SILVER;                              // 0 hero — calm silver
+  vec3 tB = mix(SILVER, PLASMA, 0.14);            // 1 capabilities — cool tech tinge
+  if (ti > 0.5) { tA = mix(SILVER, PLASMA, 0.14); tB = mix(SILVER, VOLT, 0.14); }      // 2 impact
+  if (ti > 1.5) { tA = mix(SILVER, VOLT, 0.14);   tB = mix(SILVER, PLASMA, 0.24); }    // 3 edge — quantum
+  if (ti > 2.5) { tA = mix(SILVER, PLASMA, 0.24); tB = SILVER * 0.97; }                // 4 process — neutral
+  if (ti > 3.5) { tA = SILVER * 0.97;             tB = mix(SILVER, VOLT, 0.2); }       // 5 proof — confidence
+  if (ti > 4.5) { tA = mix(SILVER, VOLT, 0.2);    tB = SILVER; }                       // 6 faq — settles back
+  if (ti > 5.5) { tA = SILVER;                    tB = mix(SILVER, mix(VOLT, PLASMA, 0.5), 0.26); } // 7 contact — echoes the aurora CTA
+
+  vec3 tint = mix(tA, tB, tf);
+  vColor = mix(base, tint, 0.55);
 
   // hover glow: particles near the smoothed cursor warm up and trail the
   // pointer. Kept subtle — it must never outshine the DOM text above it.
@@ -160,10 +144,7 @@ export class SceneManager {
     const qArr = qFormation(count);
     set("position", qArr);
     set("aQ", qArr);
-    set("aStream", streamFormation(count));
-    set("aOrbital", orbitalFormation(count));
-    set("aStar", starFormation(count));
-    set("aAurora", auroraFormation(count));
+    set("aFloat", floatFormation(count));
 
     const seeds = new Float32Array(count * 4);
     for (let i = 0; i < count; i++) {
@@ -187,7 +168,6 @@ export class SceneManager {
         uPixelRatio: { value: dprClamp() },
         uQShift: { value: 0 },
         uQScale: { value: 1 },
-        uXShift: { value: 0 },
         uPointer: { value: new THREE.Vector2(99, 99) },
         uHover: { value: 0 },
       },
@@ -231,31 +211,15 @@ export class SceneManager {
     }
     this.material.uniforms.uQScale.value = qScale;
     this.material.uniforms.uQShift.value = qShift;
-    this.applyShift();
   };
 
   private halfW = 4;
   private halfH = 2.8;
   private meshScale = 1;
 
-  /** Formations drift into whichever side of the layout is empty (desktop). */
-  private static SHIFT_TARGETS = [0, 0, 1.3, 0, 0]; // Q stream orbital star aurora
   private wide = window.innerWidth >= 1024;
   private progress = 0;
   private targetProgress = 0;
-
-  private applyShift() {
-    if (!this.wide) {
-      this.material.uniforms.uXShift.value = 0;
-      return;
-    }
-    const p = this.progress;
-    const i = Math.min(3, Math.floor(p));
-    const t = p - i;
-    const s = t * t * (3 - 2 * t);
-    const T = SceneManager.SHIFT_TARGETS;
-    this.material.uniforms.uXShift.value = T[i] + (T[i + 1] - T[i]) * s;
-  }
 
   private onVisibility = () => {
     if (document.hidden) this.stop();
@@ -263,12 +227,13 @@ export class SceneManager {
   };
 
   /**
-   * 0..4 continuous formation index, driven by ScrollTrigger.
-   * Only sets the target — the render loop glides toward it, so fast
-   * scrolling never snaps a formation.
+   * Continuous section index driven by ScrollTrigger (0=hero, 1=capabilities,
+   * … 7=contact). Only sets the target — the render loop glides toward it, so
+   * fast scrolling never snaps. Past 1.0 this only steers the color tint;
+   * the Q→float dissolve is fully resolved by the time it reaches 1.
    */
   setProgress(p: number) {
-    this.targetProgress = Math.max(0, Math.min(4, p));
+    this.targetProgress = Math.max(0, p);
   }
 
   /** Intro convergence 0..1 (LogoIntro drives this once). */
@@ -294,14 +259,11 @@ export class SceneManager {
       const u = this.material.uniforms;
       u.uTime.value = this.clock.getElapsedTime();
 
-      // glide toward the scroll target — smooth morphs, never sudden
+      // glide toward the scroll target — smooth dissolve/tint, never sudden
       const diff = this.targetProgress - this.progress;
       if (Math.abs(diff) > 0.0004) {
-        // 0.09: quick enough that a fast scroll still lands each formation
-        // fully (the plateau between morphs is where shapes must read clearly)
         this.progress += diff * 0.09;
         u.uProgress.value = this.progress;
-        this.applyShift();
       }
 
       // gentle pointer parallax

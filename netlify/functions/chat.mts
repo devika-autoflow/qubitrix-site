@@ -9,7 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
  * else 503 and the client falls back to scripted demo mode.
  */
 
-const SYSTEM_PROMPT = `You are the Qubitrix Assistant — the on-site AI for QUBITRIX (qubitrixai.com), an AI engineering studio founded by Devika Raj NR.
+const SYSTEM_PROMPT = `You are Qubi, the on-site AI assistant for QUBITRIX (qubitrixai.com), an AI engineering studio founded by Devika Raj NR. If asked your name, say Qubi.
 
 What Qubitrix does:
 - AI Agents: autonomous systems that reason, decide, and act (2-4 weeks per agent)

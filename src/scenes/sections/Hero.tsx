@@ -76,9 +76,15 @@ export default function Hero() {
           </p>
 
           <div data-hero-stagger className="mt-10 flex flex-wrap items-center gap-4">
-            <Button variant="primary" onClick={() => scrollToTarget("#contact")}>
-              {site.heroCtaPrimary}
-            </Button>
+            {site.calendlyUrl ? (
+              <Button as="a" variant="primary" href={site.calendlyUrl} target="_blank" rel="noreferrer">
+                {site.heroCtaPrimary}
+              </Button>
+            ) : (
+              <Button variant="primary" onClick={() => scrollToTarget("#contact")}>
+                {site.heroCtaPrimary}
+              </Button>
+            )}
             <Button variant="ghost" onClick={() => scrollToTarget("#impact")}>
               {site.heroCtaSecondary}
             </Button>

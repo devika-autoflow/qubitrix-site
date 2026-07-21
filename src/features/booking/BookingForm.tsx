@@ -1,21 +1,14 @@
 import { useState, type FormEvent } from "react";
-import { TextField, TextArea, SelectField } from "../../components/ui/Field";
+import { TextField, TextArea } from "../../components/ui/Field";
 import Button from "../../components/ui/Button";
 import { site } from "../../content/site";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
-const TIMEWASTERS = [
-  "Customer support",
-  "Lead generation",
-  "Data entry & admin",
-  "Content",
-  "Other",
-];
-
 /**
- * Primary conversion path (plan §13): POST to the n8n webhook when configured,
- * mailto fallback otherwise. No auth, no accounts.
+ * General enquiry path (Calendly handles scheduled calls; this is the catch-all
+ * "reach us" form): POST to the n8n webhook when configured, mailto fallback otherwise.
+ * No auth, no accounts.
  */
 export default function BookingForm({ source = "contact" }: { source?: string }) {
   const [status, setStatus] = useState<Status>("idle");
@@ -30,12 +23,12 @@ export default function BookingForm({ source = "contact" }: { source?: string })
     if (!data.name?.trim()) errs.name = "Please add your name.";
     if (!/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? ""))
       errs.email = "Please use a valid email.";
-    if (!data.timewaster) errs.timewaster = "Pick the closest match.";
+    if (!data.message?.trim()) errs.message = "Let us know what you need.";
     setErrors(errs);
     if (Object.keys(errs).length) return;
 
     const payload = {
-      type: "booking",
+      type: "contact",
       source,
       submittedAt: new Date().toISOString(),
       ...data,
@@ -58,10 +51,10 @@ export default function BookingForm({ source = "contact" }: { source?: string })
     } else {
       // mailto fallback — still a working lead path with zero config
       const body = encodeURIComponent(
-        `Name: ${data.name}\nEmail: ${data.email}\nCompany: ${data.company || "—"}\nBiggest time-waster: ${data.timewaster}\n\nNotes:\n${data.goal || "—"}`
+        `Name: ${data.name}\nEmail: ${data.email}\nPhone: ${data.phone || "—"}\n\nMessage:\n${data.message || "—"}`
       );
       window.location.href = `mailto:${site.email}?subject=${encodeURIComponent(
-        "Strategy call request — Qubitrix"
+        "Enquiry — Qubitrix"
       )}&body=${body}`;
       setStatus("sent");
     }
@@ -78,7 +71,7 @@ export default function BookingForm({ source = "contact" }: { source?: string })
           We'll reply within 24 hours.
         </p>
         <p className="mt-3 text-sm text-silver-400">
-          Your free 30-minute consultation is one email away.
+          Thanks for reaching out — we've got your message.
         </p>
       </div>
     );
@@ -96,24 +89,21 @@ export default function BookingForm({ source = "contact" }: { source?: string })
           error={errors.email}
         />
       </div>
-      <div className="grid gap-5 sm:grid-cols-2">
-        <TextField label="Company (optional)" name="company" autoComplete="organization" />
-        <SelectField
-          label="Your biggest time-waster?"
-          name="timewaster"
-          options={TIMEWASTERS}
-          placeholder="Select the closest match"
-          error={errors.timewaster}
-        />
-      </div>
+      <TextField
+        label="Phone (optional)"
+        name="phone"
+        type="tel"
+        autoComplete="tel"
+      />
       <TextArea
-        label="Anything else? (optional)"
-        name="goal"
-        placeholder="Tell us what you're building, or just say hello"
+        label="Message"
+        name="message"
+        placeholder="Tell us what you need, or just say hello"
+        error={errors.message}
       />
       <div className="flex flex-wrap items-center gap-4 pt-1">
         <Button variant="primary" type="submit" disabled={status === "sending"}>
-          {status === "sending" ? "Transmitting…" : "Book my free strategy call"}
+          {status === "sending" ? "Transmitting…" : "Send message"}
         </Button>
         {status === "error" && (
           <p className="text-xs text-err" role="alert">

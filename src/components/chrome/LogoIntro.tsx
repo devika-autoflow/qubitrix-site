@@ -36,7 +36,7 @@ export default function LogoIntro() {
       aria-hidden="true"
       className="pointer-events-none fixed inset-0 z-[100] flex items-center justify-center bg-obsidian-0"
     >
-      <img src="/brand/q-mark.svg" alt="" width={72} height={72} />
+      <img src="/brand/q-mark.png" alt="" style={{ height: 72 }} />
     </div>
   );
 }

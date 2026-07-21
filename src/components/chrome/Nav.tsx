@@ -3,6 +3,7 @@ import { Link, useLocation } from "react-router-dom";
 import QubitrixLogo from "../ui/QubitrixLogo";
 import Button from "../ui/Button";
 import QuantumButton from "./QuantumButton";
+import AboutButton from "./AboutButton";
 import { nav, site } from "../../content/site";
 import { scrollToTarget } from "../../lib/lenis";
 import { useSession, displayName } from "../../lib/useSession";
@@ -65,6 +66,7 @@ export default function Nav() {
             </Link>
 
             <div className="hidden items-center gap-4 md:flex">
+              <AboutButton />
               <QuantumButton />
               {session ? (
                 <Link
@@ -79,13 +81,10 @@ export default function Nav() {
                 </Link>
               ) : (
                 <>
-                  <Link
-                    to="/auth"
-                    className="text-sm text-silver-400 transition-colors hover:text-silver-100"
-                  >
+                  <Button as="a" variant="ghost" href="/auth" className="!h-9 !px-5">
                     Log in
-                  </Link>
-                  <Button as="a" variant="ghost" href="/auth?mode=signup" className="!px-5 !py-2.5">
+                  </Button>
+                  <Button as="a" variant="ghost" href="/auth?mode=signup" className="!h-9 !px-5">
                     Sign up
                   </Button>
                 </>
@@ -138,6 +137,16 @@ export default function Nav() {
                 </button>
               </li>
             ))}
+            <li>
+              <Link
+                to="/about"
+                onClick={() => setOpen(false)}
+                className="flex items-baseline gap-4 text-left"
+              >
+                <span className="hud-label text-volt-tint">{String(nav.length + 1).padStart(2, "0")}</span>
+                <span className="metal-text font-display text-3xl font-semibold">About</span>
+              </Link>
+            </li>
             <li className="flex flex-wrap items-center gap-4 pt-4">
               {site.calendlyUrl ? (
                 <Button as="a" variant="primary" href={site.calendlyUrl} target="_blank" rel="noreferrer">

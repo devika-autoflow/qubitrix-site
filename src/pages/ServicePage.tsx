@@ -5,6 +5,7 @@ import Footer from "../components/chrome/Footer";
 import Button from "../components/ui/Button";
 import NotFound from "./NotFound";
 import { services } from "../content/services";
+import { site } from "../content/site";
 
 /**
  * Full service detail page (/services/:slug). Each card in the Services
@@ -113,12 +114,15 @@ export default function ServicePage() {
                   Book a free strategy call and we'll map it to your business.
                 </p>
               </div>
-              <Button
-                variant="primary"
-                onClick={() => window.location.assign("/#contact")}
-              >
-                Book a Free Strategy Call
-              </Button>
+              {site.calendlyUrl ? (
+                <Button as="a" variant="primary" href={site.calendlyUrl} target="_blank" rel="noreferrer">
+                  Book a Free Strategy Call
+                </Button>
+              ) : (
+                <Button variant="primary" onClick={() => window.location.assign("/#contact")}>
+                  Book a Free Strategy Call
+                </Button>
+              )}
             </div>
 
             <p className="text-sm text-silver-600">

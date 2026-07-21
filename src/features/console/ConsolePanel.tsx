@@ -10,7 +10,7 @@ interface Msg {
 const GREETING: Msg = {
   role: "assistant",
   content:
-    "Qubitrix Assistant online. Ask about our systems, timelines, or how a build would work for your business.",
+    "Qubi online. Ask about our systems, timelines, or how a build would work for your business.",
 };
 
 const INTENTS = [
@@ -35,8 +35,14 @@ function demoReply(text: string): string {
   return "I can walk you through AI agents, chatbots, automation, or custom systems — or point you to the free consultation. What's eating your team's time?";
 }
 
-/** Pull a reply out of whatever shape the n8n webhook answers with. */
-function parseWebhookReply(data: unknown): string | undefined {
+/** Pull a reply out of whatever the n8n webhook answers with — JSON or plain text. */
+function parseWebhookReply(raw: string): string | undefined {
+  let data: unknown;
+  try {
+    data = JSON.parse(raw);
+  } catch {
+    return raw.trim() || undefined; // n8n "respond with text" mode
+  }
   const first = Array.isArray(data) ? data[0] : data;
   if (typeof first === "string") return first || undefined;
   if (first && typeof first === "object") {
@@ -48,24 +54,40 @@ function parseWebhookReply(data: unknown): string | undefined {
   return undefined;
 }
 
-export default function ConsolePanel({ onClose }: { onClose: () => void }) {
+interface Props {
+  onClose: () => void;
+  onMinimize: () => void;
+  /** Minimized: stay mounted (conversation/session preserved) but visually hidden. */
+  hidden?: boolean;
+}
+
+export default function ConsolePanel({ onClose, onMinimize, hidden = false }: Props) {
   const [messages, setMessages] = useState<Msg[]>([GREETING]);
   const [input, setInput] = useState("");
   const [busy, setBusy] = useState(false);
   const [live, setLive] = useState<boolean | null>(null); // null = unknown yet
-  // one conversation id per console open; user/session ids persist in storage
+  // one conversation id per chat; reset by "New chat" or a fresh console open
   const chatIdRef = useRef(newChatId());
   const logRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
 
+  const startNewChat = () => {
+    chatIdRef.current = newChatId();
+    setMessages([GREETING]);
+    setLive(null);
+    setInput("");
+    inputRef.current?.focus();
+  };
+
   useEffect(() => {
+    if (hidden) return; // minimized: don't steal focus or intercept Escape
     inputRef.current?.focus();
     const onKey = (e: KeyboardEvent) => {
       if (e.key === "Escape") onClose();
     };
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose]);
+  }, [onClose, hidden]);
 
   useEffect(() => {
     logRef.current?.scrollTo({ top: logRef.current.scrollHeight, behavior: "smooth" });
@@ -96,7 +118,7 @@ export default function ConsolePanel({ onClose }: { onClose: () => void }) {
         }),
       });
       if (!res.ok) throw new Error(String(res.status));
-      const reply = parseWebhookReply(await res.json().catch(() => undefined));
+      const reply = parseWebhookReply(await res.text());
       if (!reply) throw new Error("empty");
       setLive(true);
       setMessages((m) => [...m, { role: "assistant", content: reply }]);
@@ -129,9 +151,12 @@ export default function ConsolePanel({ onClose }: { onClose: () => void }) {
 
   return (
     <div
-      className="os-panel fixed bottom-0 right-0 z-[60] flex h-[min(640px,100dvh)] w-full flex-col rounded-none sm:bottom-6 sm:right-6 sm:h-[min(600px,calc(100dvh-3rem))] sm:w-[400px] sm:rounded-2xl"
+      className={`os-panel fixed bottom-0 right-0 z-[60] flex h-[min(640px,100dvh)] w-full flex-col rounded-none sm:bottom-6 sm:right-6 sm:h-[min(600px,calc(100dvh-3rem))] sm:w-[400px] sm:rounded-2xl ${
+        hidden ? "hidden" : ""
+      }`}
       role="dialog"
-      aria-label="Qubitrix assistant"
+      aria-label="Qubi — the Qubitrix assistant"
+      aria-hidden={hidden}
     >
       {/* header */}
       <div className="flex items-center justify-between border-b hairline px-5 py-4">
@@ -142,15 +167,38 @@ export default function ConsolePanel({ onClose }: { onClose: () => void }) {
             }`}
             aria-hidden="true"
           />
-          QUBITRIX ASSISTANT{live === false ? " — DEMO" : " — ONLINE"}
+          QUBI{live === false ? " — DEMO" : " — ONLINE"}
         </p>
-        <button
-          onClick={onClose}
-          className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-silver-400 transition-colors hover:text-silver-100"
-          aria-label="Close assistant"
-        >
-          ✕
-        </button>
+        <div className="flex items-center gap-1.5">
+          <button
+            onClick={startNewChat}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-silver-400 transition-colors hover:text-silver-100"
+            aria-label="Start new chat"
+            title="New chat"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M12 5v14M5 12h14" strokeLinecap="round" />
+            </svg>
+          </button>
+          <button
+            onClick={onMinimize}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-silver-400 transition-colors hover:text-silver-100"
+            aria-label="Minimize assistant"
+            title="Minimize"
+          >
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.8" aria-hidden="true">
+              <path d="M5 12h14" strokeLinecap="round" />
+            </svg>
+          </button>
+          <button
+            onClick={onClose}
+            className="flex h-8 w-8 items-center justify-center rounded-full border border-white/10 text-silver-400 transition-colors hover:text-silver-100"
+            aria-label="Close assistant"
+            title="Close"
+          >
+            ✕
+          </button>
+        </div>
       </div>
 
       {/* log */}
@@ -163,7 +211,7 @@ export default function ConsolePanel({ onClose }: { onClose: () => void }) {
         {messages.map((m, i) => (
           <div key={i} className={m.role === "user" ? "flex justify-end" : "flex"}>
             <div
-              className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+              className={`max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                 m.role === "user"
                   ? "bg-volt/15 text-silver-100"
                   : "bg-obsidian-3/80 text-silver-100"

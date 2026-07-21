@@ -4,30 +4,32 @@ interface Props {
   className?: string;
 }
 
-/** Vector brand lockup — crisp at any size, no black-box JPEG (plan blueprint step 3). */
+/**
+ * The real Qubitrix brand mark — official lockup image (public/brand/), not a
+ * redrawn approximation. `logo-wide.png` (mark + wordmark) when withWordmark
+ * is true, `q-mark.png` (icon only) otherwise. Both are pre-cropped,
+ * transparent-background PNGs derived from the owner-supplied master file.
+ */
 export default function QubitrixLogo({
   markSize = 26,
   withWordmark = true,
   className = "",
 }: Props) {
-  return (
-    <span className={`inline-flex items-center gap-3 ${className}`}>
-      <img
-        src="/brand/q-mark.svg"
-        alt=""
-        width={markSize}
-        height={markSize}
-        className="select-none"
-        draggable={false}
-      />
-      {withWordmark && (
-        <span
-          className="metal-text font-display font-semibold tracking-[0.22em]"
-          style={{ fontSize: markSize * 0.62 }}
-        >
-          QUBITRIX
-        </span>
-      )}
-    </span>
+  return withWordmark ? (
+    <img
+      src="/brand/logo-wide.png"
+      alt="Qubitrix"
+      style={{ height: markSize }}
+      className={`select-none ${className}`}
+      draggable={false}
+    />
+  ) : (
+    <img
+      src="/brand/q-mark.png"
+      alt="Qubitrix"
+      style={{ height: markSize }}
+      className={`select-none ${className}`}
+      draggable={false}
+    />
   );
 }

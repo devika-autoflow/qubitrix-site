@@ -10,7 +10,7 @@ Cinematic single-page journey + subpages for qubitrixai.com. Vite + React 18 + T
 - Brand says QUBITRIX everywhere. Quantum = metaphor/ambition, never a hardware claim. No fabricated stats or clients.
 
 ## Architecture invariants
-- ONE WebGL canvas (`scenes/canvas/SceneManager.ts`), driven by `getScene().setProgress(0..5)` from ScrollTriggers in `pages/Home.tsx`. Formations: Q(0) stream(1) black hole(2) orbital(3) starfield(4) aurora(5).
+- ONE WebGL canvas (`scenes/canvas/SceneManager.ts`), driven by `getScene().setProgress(0..7)` from ScrollTriggers in `pages/Home.tsx`. User decision (redesigned): the Q assembles in Hero, dissolves ONCE into an ambient floating particle field, and stays that shape for the rest of the page — `setProgress` past 1.0 only drives a slow per-section color-tint drift (never another shape morph, no orbital/black-hole/starfield/aurora shapes anymore).
 - Pins ONLY on Hero, Lab (desktop), Contact-adjacent moments. Everything else = natural scroll + `[data-reveal]` (see `lib/useReveal.ts`). Never add more pins (user decision).
 - Motion split (user decision, July 2026): GSAP + ScrollTrigger owns the canvas journey and section pins; framer-motion owns UI micro-interactions, overlays, nav, and scroll-linked reveal/parallax effects. Never animate the same element with both. DOM animates `transform`/`opacity` only.
 - Background/scroll animation must stay LIGHT: no scroll-jacking beyond existing pins, no heavy blur/filter animation, no layout-thrashing scroll listeners. If a scroll effect drops frames on mobile emulation, cut it.
@@ -25,12 +25,17 @@ Check this table before starting UI work; read the matching skill file on demand
 - Pure logic/content/backend tasks → no design skill needed.
 
 ## Output protocol — every time you present work to the user
-1. Run the site locally (`npm run dev`, background) and GIVE THE LOCALHOST URL in your final message — the user always wants to preview in the browser.
+1. The localhost preview must be open AT ALL TIMES: on EVERY prompt, make sure `npm run dev` is running (background) and GIVE THE LOCALHOST URL in your final message — the user always previews every change in the browser BEFORE anything is pushed. Never leave a change unpreviewed.
 2. Verify the background/scroll animation is smooth and NOT heavy (watch for dropped frames, long tasks, jank at 390px width) before presenting.
 3. Quality bar: "award-winning" (Awwwards-level) — polished, pro, AI-futuristic. Never present something that looks default or templated.
 
+## CODE_MAP.md — the project index (mandatory)
+- `CODE_MAP.md` (repo root) is the library index of every file: sections routed by request type ("change copy" → §1, "icon" → §4, "booking" → §5, …) with a description of what each file contains.
+- If you are lost or don't know which file a request touches, open `CODE_MAP.md` FIRST and route from its table — don't scan files one by one.
+- Whenever you ADD, DELETE, RENAME a file or change what a file is responsible for, you MUST update `CODE_MAP.md` in the same task. An out-of-date map is a bug.
+
 ## Before any implementation
-1. Read the relevant plan section; inspect the files you'll touch and their imports.
+1. Analyse the request, then use `CODE_MAP.md` to locate the exact file(s); read the relevant plan section; inspect the files you'll touch and their imports.
 2. Check `src/content/` first — copy changes are content changes, not component changes.
 3. State what you intend to change before changing it.
 

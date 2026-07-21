@@ -17,20 +17,21 @@ import CosmicLayer from "../components/chrome/CosmicLayer";
 import { ScrollTrigger } from "../lib/gsap";
 
 /**
- * Formation target per section — each formation lives for roughly two
- * sections: it forms entering the first, stays fully built, then crumples
- * into the next formation. hero=Q(0) → capabilities=stream(1)
- * → impact+edge=orbital(2) → process+proof=starfield(3) → faq+contact=aurora(4)
+ * Section index per anchor — drives the canvas (user decision, redesigned):
+ * the Q assembles in the Hero, dissolves once entering Capabilities, then
+ * stays an ambient floating field for the rest of the page. Past that
+ * dissolve, this index only steers a slow color-tint drift — never another
+ * shape change.
  */
 const JOURNEY: Array<[string, number]> = [
   ["#hero", 0],
   ["#capabilities", 1],
   ["#impact", 2],
-  ["#edge", 2],
-  ["#process", 3],
-  ["#proof", 3],
-  ["#faq", 4],
-  ["#contact", 4],
+  ["#edge", 3],
+  ["#process", 4],
+  ["#proof", 5],
+  ["#faq", 6],
+  ["#contact", 7],
 ];
 
 export default function Home() {

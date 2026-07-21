@@ -1,6 +1,7 @@
 import { useEffect } from "react";
 import { BrowserRouter, Routes, Route, Navigate, useLocation } from "react-router-dom";
 import Home from "./pages/Home";
+import About from "./pages/About";
 import ServicePage from "./pages/ServicePage";
 import WorkIndex from "./pages/WorkIndex";
 import WorkDetail from "./pages/WorkDetail";
@@ -38,6 +39,7 @@ export default function App() {
       <ScrollManager />
       <Routes>
         <Route path="/" element={<Home />} />
+        <Route path="/about" element={<About />} />
         <Route path="/services/:slug" element={<ServicePage />} />
         <Route path="/work" element={<WorkIndex />} />
         <Route path="/work/:slug" element={<WorkDetail />} />

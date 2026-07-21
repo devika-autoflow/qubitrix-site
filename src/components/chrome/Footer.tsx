@@ -18,6 +18,7 @@ export default function Footer() {
         <div>
           <p className="hud-label mb-4">Navigate</p>
           <ul className="space-y-2.5 text-sm text-silver-400">
+            <li><Link className="hover:text-silver-100" to="/about">About</Link></li>
             <li><Link className="hover:text-silver-100" to="/work">Work</Link></li>
             <li><Link className="hover:text-silver-100" to="/book">Book a consultation</Link></li>
             <li><Link className="hover:text-silver-100" to="/auth">Sign in</Link></li>
