@@ -2,6 +2,7 @@ import { useState, type FormEvent } from "react";
 import { TextField, TextArea } from "../../components/ui/Field";
 import Button from "../../components/ui/Button";
 import { site } from "../../content/site";
+import { getChatIdentity } from "../../lib/chatSession";
 
 type Status = "idle" | "sending" | "sent" | "error";
 
@@ -27,10 +28,13 @@ export default function BookingForm({ source = "contact" }: { source?: string })
     setErrors(errs);
     if (Object.keys(errs).length) return;
 
+    const identity = getChatIdentity();
     const payload = {
       type: "contact",
       source,
       submittedAt: new Date().toISOString(),
+      page: window.location.pathname,
+      ...identity,
       ...data,
     };
 

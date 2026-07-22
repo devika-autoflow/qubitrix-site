@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from "react";
 import Button from "../../components/ui/Button";
 import { TextField, TextArea } from "../../components/ui/Field";
 import { site } from "../../content/site";
+import { getChatIdentity } from "../../lib/chatSession";
 
 const DOMAINS = ["Sales", "Support", "Operations", "Content", "Other"];
 const OUTCOMES = [
@@ -47,9 +48,12 @@ export default function RequestBuilder({ onClose }: { onClose: () => void }) {
     const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
     if (!data.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? "")) return;
 
+    const identity = getChatIdentity();
     const payload = {
       type: "request-builder",
       submittedAt: new Date().toISOString(),
+      page: window.location.pathname,
+      ...identity,
       domain,
       outcomes,
       detail,
