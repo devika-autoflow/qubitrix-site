@@ -79,13 +79,18 @@ export default function Demo() {
       <Footer />
 
       {/* Scope the widget's own CSS variables to just this embed, so it doesn't
-          leak into (or clash with) the floating "Qubi" launcher elsewhere on the site. */}
+          leak into (or clash with) the floating "Qubi" launcher elsewhere on the site.
+          Overrides are intentionally redundant (variables AND direct selectors,
+          with !important on the parts that were rendering illegibly) because the
+          widget's own light-theme defaults were winning in places the variables
+          alone didn't reach. */}
       <style>{`
         .demo-chat-embed {
           --chat--color-primary: #7c6bff;
           --chat--color-primary-shade-50: #6a5aeb;
           --chat--color-secondary: #7c6bff;
-          --chat--color-white: #e9e9f0;
+          --chat--color-secondary-shade-50: #6a5aeb;
+          --chat--color-white: #16161d;
           --chat--color-light: #16161d;
           --chat--color-light-shade-50: #1f1f29;
           --chat--color-light-shade-100: #26262f;
@@ -98,17 +103,37 @@ export default function Demo() {
           --chat--transition-duration: 0.15s;
           --chat--window--width: 100%;
           --chat--window--height: 100%;
+          --chat--header--background: #16161d;
+          --chat--header--color: #e9e9f0;
+          --chat--body--background: #16161d;
           --chat--message--bot--background: #26262f;
           --chat--message--bot--color: #e9e9f0;
-          --chat--message--user--background: rgba(124,107,255,0.18);
-          --chat--message--user--color: #e9e9f0;
+          --chat--message--user--background: #7c6bff;
+          --chat--message--user--color: #ffffff;
           --chat--toggle--background: #7c6bff;
+          --chat--input--border: 1px solid #33333f;
+          --chat--textarea--background: #1f1f29;
+          --chat--input--text-color: #e9e9f0;
         }
+        .demo-chat-embed,
         .demo-chat-embed .chat-window-wrapper,
         .demo-chat-embed .n8n-chat {
           height: 100%;
           width: 100%;
           border-radius: 1rem;
+          background: #16161d !important;
+        }
+        .demo-chat-embed [class*="chat-message-from-user"] {
+          background: #7c6bff !important;
+          color: #ffffff !important;
+        }
+        .demo-chat-embed [class*="chat-message-from-bot"] {
+          background: #26262f !important;
+          color: #e9e9f0 !important;
+        }
+        .demo-chat-embed [class*="chat-layout"],
+        .demo-chat-embed [class*="chat-messages-list"] {
+          background: #16161d !important;
         }
       `}</style>
     </>
