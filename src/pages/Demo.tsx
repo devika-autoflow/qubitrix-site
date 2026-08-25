@@ -135,6 +135,18 @@ export default function Demo() {
         .demo-chat-embed [class*="chat-messages-list"] {
           background: #16161d !important;
         }
+        .demo-chat-embed [class*="chat-input"],
+        .demo-chat-embed [class*="chat-inputs"],
+        .demo-chat-embed textarea,
+        .demo-chat-embed input {
+          background: #1f1f29 !important;
+          color: #e9e9f0 !important;
+          border-color: #33333f !important;
+        }
+        .demo-chat-embed textarea::placeholder,
+        .demo-chat-embed input::placeholder {
+          color: #8a8a98 !important;
+        }
       `}</style>
     </>
   );
