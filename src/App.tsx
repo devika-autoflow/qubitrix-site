@@ -6,6 +6,7 @@ import ServicePage from "./pages/ServicePage";
 import WorkIndex from "./pages/WorkIndex";
 import WorkDetail from "./pages/WorkDetail";
 import Book from "./pages/Book";
+import Demo from "./pages/Demo";
 import Quantum from "./pages/Quantum";
 import BlogPost from "./pages/BlogPost";
 import DockNav from "./components/chrome/DockNav";
@@ -44,6 +45,7 @@ export default function App() {
         <Route path="/work" element={<WorkIndex />} />
         <Route path="/work/:slug" element={<WorkDetail />} />
         <Route path="/book" element={<Book />} />
+        <Route path="/demo" element={<Demo />} />
         <Route path="/quantum" element={<Quantum />} />
         <Route path="/blog" element={<Navigate to="/quantum" replace />} />
         <Route path="/blog/:slug" element={<BlogPost />} />
