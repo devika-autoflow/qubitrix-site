@@ -65,6 +65,10 @@ export default function Demo() {
           sub="This is the same kind of system Qubitrix builds for real estate agencies — instant, always-on lead response instead of a claim in an email. Ask about a property and see how it responds."
         />
 
+        <p className="mt-6 text-xs text-silver-500">
+          This is an illustrative demo running on sample listings. A production build connects to your actual CRM and live inventory instead.
+        </p>
+
         {site.demoChatWebhookUrl ? (
           <div
             ref={containerRef}
