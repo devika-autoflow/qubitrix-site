@@ -11,6 +11,7 @@ import Quantum from "./pages/Quantum";
 import BlogPost from "./pages/BlogPost";
 import DockNav from "./components/chrome/DockNav";
 import Legal from "./pages/Legal";
+import Unsubscribe from "./pages/Unsubscribe";
 import NotFound from "./pages/NotFound";
 import Auth from "./pages/Auth";
 import ResetPassword from "./pages/ResetPassword";
@@ -53,6 +54,7 @@ export default function App() {
         <Route path="/auth/reset" element={<ResetPassword />} />
         <Route path="/auth/update-password" element={<UpdatePassword />} />
         <Route path="/legal/:doc" element={<Legal />} />
+        <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
       <DockNav />
