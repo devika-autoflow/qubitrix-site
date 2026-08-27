@@ -1,6 +1,4 @@
 import { useSearchParams, Link } from "react-router-dom";
-import Nav from "../components/chrome/Nav";
-import Footer from "../components/chrome/Footer";
 import Button from "../components/ui/Button";
 import QubitrixLogo from "../components/ui/QubitrixLogo";
 
@@ -8,18 +6,18 @@ import QubitrixLogo from "../components/ui/QubitrixLogo";
  * Confirmation page shown after a lead unsubscribes from outreach emails.
  * The n8n /unsub webhook does the actual unsubscribe (marks the sheet row),
  * then redirects here with ?email= so this page can just confirm it.
+ * Standalone — deliberately no Nav/Footer/DockNav/Ask Qubi (see App.tsx GlobalChrome),
+ * this is a transactional confirmation, not a page to browse from.
  */
 export default function Unsubscribe() {
   const [params] = useSearchParams();
   const email = params.get("email");
 
   return (
-    <>
-      <Nav />
-      <main
-        id="main"
-        className="flex min-h-screen flex-col items-center justify-center px-5 py-32 text-center"
-      >
+    <main
+      id="main"
+      className="flex min-h-screen flex-col items-center justify-center bg-obsidian-0 px-5 py-16 text-center"
+    >
         <QubitrixLogo markSize={40} withWordmark={false} className="mb-8" />
 
         <div
@@ -81,8 +79,6 @@ export default function Unsubscribe() {
             info@qubitrixai.com
           </a>
         </p>
-      </main>
-      <Footer />
-    </>
+    </main>
   );
 }

@@ -31,6 +31,18 @@ function ScrollManager() {
   return null;
 }
 
+/** DockNav and the Ask Qubi console are site chrome — hidden on standalone/transactional pages. */
+function GlobalChrome() {
+  const { pathname } = useLocation();
+  if (pathname === "/unsubscribe") return null;
+  return (
+    <>
+      <DockNav />
+      <ConsoleLauncher />
+    </>
+  );
+}
+
 export default function App() {
   useEffect(() => {
     initLenis();
@@ -57,8 +69,7 @@ export default function App() {
         <Route path="/unsubscribe" element={<Unsubscribe />} />
         <Route path="*" element={<NotFound />} />
       </Routes>
-      <DockNav />
-      <ConsoleLauncher />
+      <GlobalChrome />
     </BrowserRouter>
   );
 }
