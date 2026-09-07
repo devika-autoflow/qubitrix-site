@@ -27,6 +27,22 @@ export const legalDocs: LegalDoc[] = [
         heading: "Your rights",
         body: "You may request access to, correction of, or deletion of your personal information at any time by emailing us.",
       },
+      {
+        heading: "Facebook and Social Media Integrations",
+        body: "If you connect with us through Facebook or use any Qubitrix app that integrates with Facebook, we may receive basic profile information that Facebook shares with connected apps (such as your name and profile ID). We use this solely to provide the service you requested. We do not store Facebook data beyond what is required to operate the service.",
+      },
+      {
+        heading: "Data Deletion",
+        body: "You may request deletion of any personal data we hold about you at any time. To submit a deletion request:\n\n1. Email hello@qubitrixai.com with the subject line \"Data Deletion Request\"\n2. Include your name and the email address or Facebook account associated with your request\n3. We will process your request within 30 days and confirm via email\n\nIf you connected a Facebook account to any Qubitrix app, you can also remove the app directly from Facebook by going to: Settings → Security and Login → Apps and Websites → find Qubitrix → click Remove.\n\nThis removes Facebook's connection to the app immediately.",
+      },
+      {
+        heading: "Cookies",
+        body: "This website uses no tracking cookies. Any functional cookies used are strictly necessary for the site to operate and contain no personal data.",
+      },
+      {
+        heading: "Contact",
+        body: "For any privacy-related questions or requests, contact us at hello@qubitrixai.com",
+      },
     ],
   },
   {

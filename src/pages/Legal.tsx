@@ -21,7 +21,7 @@ export default function Legal() {
           {legal.sections.map((s) => (
             <section key={s.heading}>
               <h2 className="font-display text-lg font-semibold text-silver-100">{s.heading}</h2>
-              <p className="mt-2 text-sm leading-relaxed text-silver-400">{s.body}</p>
+              <p className="mt-2 whitespace-pre-line text-sm leading-relaxed text-silver-400">{s.body}</p>
             </section>
           ))}
         </div>
