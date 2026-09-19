@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+  <url><loc>https://qubitrixai.com/</loc><priority>1.0</priority></url>
+  <url><loc>https://qubitrixai.com/about</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/work</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/book</loc><priority>0.9</priority></url>
+  <url><loc>https://qubitrixai.com/quantum</loc><priority>0.7</priority></url>
+
+  <url><loc>https://qubitrixai.com/services/ai-agents</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/services/ai-chatbots</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/services/automation</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/services/lead-generation</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/services/content-engines</loc><priority>0.8</priority></url>
+  <url><loc>https://qubitrixai.com/services/custom-ai</loc><priority>0.8</priority></url>
+
+  <url><loc>https://qubitrixai.com/work/student-guide-whatsapp-bot</loc><priority>0.6</priority></url>
+  <url><loc>https://qubitrixai.com/work/cv-intake-pipeline</loc><priority>0.6</priority></url>
+  <url><loc>https://qubitrixai.com/work/instagram-dm-engine</loc><priority>0.6</priority></url>
+  <url><loc>https://qubitrixai.com/work/ai-request-processing</loc><priority>0.6</priority></url>
+  <url><loc>https://qubitrixai.com/work/website-copywriting-engine</loc><priority>0.6</priority></url>
+
+  <url><loc>https://qubitrixai.com/blog/quantum-computing-plain-language</loc><priority>0.5</priority></url>
+  <url><loc>https://qubitrixai.com/blog/quantum-meets-ai</loc><priority>0.5</priority></url>
+  <url><loc>https://qubitrixai.com/blog/why-qubitrix-watches-quantum</loc><priority>0.5</priority></url>
+  <url><loc>https://qubitrixai.com/blog/agents-run-your-business</loc><priority>0.5</priority></url>
+
+  <url><loc>https://qubitrixai.com/legal/privacy</loc><priority>0.3</priority></url>
+  <url><loc>https://qubitrixai.com/legal/terms</loc><priority>0.3</priority></url>
+  <url><loc>https://qubitrixai.com/legal/cookies</loc><priority>0.3</priority></url>
+</urlset>

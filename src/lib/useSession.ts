@@ -1,21 +1,37 @@
 import { useEffect, useState } from "react";
 import type { Session } from "@supabase/supabase-js";
-import { getSupabase } from "./supabase";
 
 /**
  * Live Supabase session for any component. Sessions persist in localStorage
  * (see lib/supabase.ts), so a returning visitor is still signed in — the
  * UI must greet them by name, never ask them to log in again.
+ *
+ * The supabase client is imported dynamically: Nav uses this hook on every
+ * page, and loading ~130 kB of auth SDK before first paint is not worth a
+ * greeting that only signed-in visitors ever see.
  */
 export function useSession(): Session | null {
   const [session, setSession] = useState<Session | null>(null);
 
   useEffect(() => {
-    const supabase = getSupabase();
-    if (!supabase) return;
-    void supabase.auth.getSession().then(({ data }) => setSession(data.session));
-    const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
-    return () => sub.subscription.unsubscribe();
+    let cancelled = false;
+    let unsubscribe: (() => void) | undefined;
+
+    void (async () => {
+      const { getSupabase } = await import("./supabase");
+      const supabase = getSupabase();
+      if (!supabase || cancelled) return;
+      const { data } = await supabase.auth.getSession();
+      if (cancelled) return;
+      setSession(data.session);
+      const { data: sub } = supabase.auth.onAuthStateChange((_e, s) => setSession(s));
+      unsubscribe = () => sub.subscription.unsubscribe();
+    })();
+
+    return () => {
+      cancelled = true;
+      unsubscribe?.();
+    };
   }, []);
 
   return session;

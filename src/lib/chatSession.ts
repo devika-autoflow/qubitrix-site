@@ -8,6 +8,8 @@
  *   apart from "brand-new chat".
  */
 
+import { analyticsAllowed } from "./consent";
+
 const uuid = () =>
   typeof crypto !== "undefined" && "randomUUID" in crypto
     ? crypto.randomUUID()
@@ -39,8 +41,13 @@ export interface ChatIdentity {
 }
 
 export function getChatIdentity(): ChatIdentity {
-  const user = persistent(localStorage, "qx-user-id");
+  // The cross-visit userId is non-essential tracking, so it is only written
+  // once the visitor has opted in. Without consent we fall back to the per-tab
+  // sessionId, which is enough to hold a single conversation together.
   const session = persistent(sessionStorage, "qx-session-id");
+  const user = analyticsAllowed()
+    ? persistent(localStorage, "qx-user-id")
+    : { id: session.id, isNew: session.isNew };
 
   let wasRefreshed = false;
   try {

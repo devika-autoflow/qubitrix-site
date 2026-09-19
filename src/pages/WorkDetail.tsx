@@ -38,6 +38,7 @@ export default function WorkDetail() {
                   src={img.src}
                   alt={img.alt}
                   loading="lazy"
+                  decoding="async"
                   className="w-full object-cover"
                 />
                 <figcaption className="border-t hairline px-4 py-2.5 font-mono text-[10px] tracking-[0.12em] text-silver-600">

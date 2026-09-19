@@ -53,7 +53,7 @@ export const blog: BlogPost[] = [
   {
     slug: "why-qubitrix-watches-quantum",
     index: "Q-03",
-    title: "Why an AI studio watches quantum",
+    title: "Why an AI agency watches quantum",
     tag: "SYSTEMS",
     minutes: 3,
     excerpt:
@@ -62,7 +62,7 @@ export const blog: BlogPost[] = [
       "Qubitrix takes its name from the qubit deliberately. Not because we run quantum hardware — we don't, and we won't claim to — but because the qubit represents the frontier our work points toward: systems that hold more possibilities than a single fixed answer.",
       "The AI systems we build today — agents, automation pipelines, custom models — are the practical frontier. They are what actually moves a business this year. Quantum is the horizon behind them: a bet on where computation goes next.",
       "In practice, watching quantum shapes how we engineer. We design systems to be model-agnostic and compute-agnostic, so that when new engines arrive — better LLMs this quarter, quantum accelerators someday — the machinery we've built for clients can adopt them instead of being replaced by them.",
-      "That is the studio's promise in one line: build on today's frontier, stay ready for the next one.",
+      "That is the agency's promise in one line: build on today's frontier, stay ready for the next one.",
     ],
   },
   {

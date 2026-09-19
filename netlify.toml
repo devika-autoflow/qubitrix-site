@@ -12,6 +12,29 @@
   to = "/index.html"
   status = 200
 
+# ---------------------------------------------------------------------------
+# Security headers (apply to every response; asset caching is layered below)
+# ---------------------------------------------------------------------------
+[[headers]]
+  for = "/*"
+  [headers.values]
+    # cdn.jsdelivr.net is allowed for ONE reason: /demo loads n8n's official chat
+    # widget (script + stylesheet) from it — see src/pages/Demo.tsx. It is the
+    # only third-party origin the site executes code from. If that widget is ever
+    # bundled locally instead, drop jsdelivr from script-src and style-src.
+    # 'unsafe-inline' in style-src is required regardless — framer-motion and GSAP
+    # write inline style attributes, which a nonce cannot cover.
+    Content-Security-Policy = "default-src 'self'; script-src 'self' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; img-src 'self' data: blob: https://cdn.jsdelivr.net; font-src 'self' data: https://cdn.jsdelivr.net; connect-src 'self' https://*.supabase.co wss://*.supabase.co wss://n8n.devikarajnr.fyi https://n8n.devikarajnr.fyi https://cdn.jsdelivr.net; frame-src https://calendly.com; frame-ancestors 'none'; base-uri 'self'; form-action 'self'; object-src 'none'; upgrade-insecure-requests"
+    Strict-Transport-Security = "max-age=63072000; includeSubDomains; preload"
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    Permissions-Policy = "camera=(), microphone=(), geolocation=(), payment=(), usb=(), interest-cohort=()"
+    Cross-Origin-Opener-Policy = "same-origin"
+    Cross-Origin-Resource-Policy = "same-origin"
+    X-Permitted-Cross-Domain-Policies = "none"
+
+# Fingerprinted assets — safe to cache forever
 [[headers]]
   for = "/fonts/*"
   [headers.values]
@@ -21,3 +44,9 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# index.html must never be cached, or deploys go unseen
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

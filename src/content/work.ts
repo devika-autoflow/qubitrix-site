@@ -38,8 +38,8 @@ export const work: WorkItem[] = [
     result:
       "A self-running student pipeline. Staff watch one dashboard instead of a thousand chats — sessions, replies, and conversions counted in real time.",
     images: [
-      { src: "/work/student-whatsapp-bot-flow.png", alt: "n8n workflow orchestrating the student guide WhatsApp bot" },
-      { src: "/work/student-whatsapp-bot-dashboard.png", alt: "KPI dashboard: signups, WhatsApp funnel, engagement and completion stats" },
+      { src: "/work/student-whatsapp-bot-flow.webp", alt: "n8n workflow orchestrating the student guide WhatsApp bot" },
+      { src: "/work/student-whatsapp-bot-dashboard.webp", alt: "KPI dashboard: signups, WhatsApp funnel, engagement and completion stats" },
     ],
   },
   {
@@ -56,7 +56,7 @@ export const work: WorkItem[] = [
     result:
       "A clean, searchable candidate pipeline that assembles itself — every incoming CV becomes a structured record with the source file one click away.",
     images: [
-      { src: "/work/cv-intake-flow.png", alt: "Automation flow: Gmail intake, Drive filing, OCR, AI extraction to Sheets" },
+      { src: "/work/cv-intake-flow.webp", alt: "Automation flow: Gmail intake, Drive filing, OCR, AI extraction to Sheets" },
     ],
   },
   {
@@ -73,7 +73,7 @@ export const work: WorkItem[] = [
     result:
       "An always-on engagement loop: instant personalized replies, automatic follow-ups, and more conversations converting — with zero manual DM handling.",
     images: [
-      { src: "/work/instagram-dm-flow.png", alt: "ManyChat flow powering AI replies and timed follow-ups" },
+      { src: "/work/instagram-dm-flow.webp", alt: "ManyChat flow powering AI replies and timed follow-ups" },
     ],
   },
   {
@@ -90,8 +90,8 @@ export const work: WorkItem[] = [
     result:
       "A production internal-operations engine with full audit logs — consistent responses at scale that get sharper with every request handled.",
     images: [
-      { src: "/work/request-processing-flow.png", alt: "AI request processing workflow with validation and routing" },
-      { src: "/work/request-processing-memory.png", alt: "Vector memory pipeline storing requests and responses as embeddings" },
+      { src: "/work/request-processing-flow.webp", alt: "AI request processing workflow with validation and routing" },
+      { src: "/work/request-processing-memory.webp", alt: "Vector memory pipeline storing requests and responses as embeddings" },
     ],
   },
   {
@@ -108,7 +108,7 @@ export const work: WorkItem[] = [
     result:
       "Launch-ready, on-brand copy for every page in a fraction of the time — consistent messaging from the home page to the last FAQ.",
     images: [
-      { src: "/work/copywriting-flow.png", alt: "n8n copywriting workflow: extract, structure, draft, coherence-check, publish to Notion" },
+      { src: "/work/copywriting-flow.webp", alt: "n8n copywriting workflow: extract, structure, draft, coherence-check, publish to Notion" },
     ],
   },
 ];

@@ -3,6 +3,12 @@ import Button from "../../components/ui/Button";
 import { TextField, TextArea } from "../../components/ui/Field";
 import { site } from "../../content/site";
 import { getChatIdentity } from "../../lib/chatSession";
+import {
+  HONEYPOT_FIELD,
+  checkSubmission,
+  withoutHoneypot,
+  honeypotStyle,
+} from "../../lib/antiSpam";
 
 const DOMAINS = ["Sales", "Support", "Operations", "Content", "Other"];
 const OUTCOMES = [
@@ -43,9 +49,18 @@ export default function RequestBuilder({ onClose }: { onClose: () => void }) {
   const toggleOutcome = (o: string) =>
     setOutcomes((prev) => (prev.includes(o) ? prev.filter((x) => x !== o) : [...prev, o]));
 
+  const mountedAt = useRef(Date.now());
+
   const submit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    const data = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+    const raw = Object.fromEntries(new FormData(e.currentTarget)) as Record<string, string>;
+
+    // Bots get the success state and nothing else — never a hint to retry.
+    if (checkSubmission(raw, mountedAt.current).isSpam) {
+      setStatus("sent");
+      return;
+    }
+    const data = withoutHoneypot(raw);
     if (!data.name?.trim() || !/^[^@\s]+@[^@\s]+\.[^@\s]+$/.test(data.email ?? "")) return;
 
     const identity = getChatIdentity();
@@ -176,6 +191,15 @@ export default function RequestBuilder({ onClose }: { onClose: () => void }) {
           </div>
         ) : (
           <form onSubmit={submit} className="mt-8" noValidate>
+            {/* Honeypot — hidden from people, irresistible to naive bots. */}
+            <input
+              type="text"
+              name={HONEYPOT_FIELD}
+              tabIndex={-1}
+              autoComplete="off"
+              aria-hidden="true"
+              style={honeypotStyle}
+            />
             <h2 className="metal-text font-display text-xl font-semibold">
               Where do we send the blueprint?
             </h2>

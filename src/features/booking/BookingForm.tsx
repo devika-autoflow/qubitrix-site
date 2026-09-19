@@ -1,4 +1,10 @@
-import { useState, type FormEvent } from "react";
+import { useState, useRef, type FormEvent } from "react";
+import {
+  HONEYPOT_FIELD,
+  checkSubmission,
+  withoutHoneypot,
+  honeypotStyle,
+} from "../../lib/antiSpam";
 import { TextField, TextArea } from "../../components/ui/Field";
 import Button from "../../components/ui/Button";
 import { site } from "../../content/site";
@@ -14,11 +20,19 @@ type Status = "idle" | "sending" | "sent" | "error";
 export default function BookingForm({ source = "contact" }: { source?: string }) {
   const [status, setStatus] = useState<Status>("idle");
   const [errors, setErrors] = useState<Record<string, string>>({});
+  const mountedAt = useRef(Date.now());
 
   const onSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     const form = e.currentTarget;
-    const data = Object.fromEntries(new FormData(form)) as Record<string, string>;
+    const raw = Object.fromEntries(new FormData(form)) as Record<string, string>;
+
+    // Bots get the success state and nothing else — never a hint to retry.
+    if (checkSubmission(raw, mountedAt.current).isSpam) {
+      setStatus("sent");
+      return;
+    }
+    const data = withoutHoneypot(raw);
 
     const errs: Record<string, string> = {};
     if (!data.name?.trim()) errs.name = "Please add your name.";
@@ -83,6 +97,15 @@ export default function BookingForm({ source = "contact" }: { source?: string })
 
   return (
     <form onSubmit={onSubmit} noValidate className="space-y-5">
+      {/* Honeypot — hidden from people, irresistible to naive bots. */}
+      <input
+        type="text"
+        name={HONEYPOT_FIELD}
+        tabIndex={-1}
+        autoComplete="off"
+        aria-hidden="true"
+        style={honeypotStyle}
+      />
       <div className="grid gap-5 sm:grid-cols-2">
         <TextField label="Name" name="name" autoComplete="name" error={errors.name} />
         <TextField

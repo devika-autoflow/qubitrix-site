@@ -52,8 +52,8 @@ Every visible word lives in `src/content/`. A copy change is a content change.
 
 ## §2 PAGES & ROUTES — one file per URL
 
-Router: `src/App.tsx` (all routes declared here + global DockNav + ConsoleLauncher + scroll-to-top).
-Entry point: `src/main.tsx` (mounts App, imports fonts + CSS).
+Router: `src/App.tsx` — all routes declared here, plus `GlobalChrome` (DockNav + ConsoleLauncher, hidden on `/unsubscribe`), the ConsentBanner and scroll-to-top. **Every route but `/` is `React.lazy`** — Home stays eager because it is the LCP route.
+Entry point: `src/main.tsx` (mounts App, imports CSS; `@font-face` is in `styles/index.css`, not a package import).
 
 | Route | File | What's inside |
 |---|---|---|
@@ -63,6 +63,8 @@ Entry point: `src/main.tsx` (mounts App, imports fonts + CSS).
 | `/work` | `src/pages/WorkIndex.tsx` | Portfolio grid (GlowCards). |
 | `/work/:slug` | `src/pages/WorkDetail.tsx` | Single case study detail. |
 | `/book` | `src/pages/Book.tsx` | Booking page — hosts BookingForm + RequestBuilder toggle. |
+| `/demo` | `src/pages/Demo.tsx` | **Outreach landing page** — live real-estate lead-qualification chat demo, linked from cold emails. Mounts n8n's official chat widget from the jsDelivr CDN (not npm — see the file header) against `VITE_DEMO_CHAT_WEBHOOK_URL`. **Without that env var the page renders a fallback notice and the demo is dead**, so it must be set in Netlify, and jsDelivr must stay allowed in the CSP in `netlify.toml`. |
+| `/unsubscribe` | `src/pages/Unsubscribe.tsx` | **Where the unsubscribe link in outreach emails lands.** The n8n `/unsub` webhook does the actual opt-out, then redirects here with `?email=` and this page just confirms it. Standalone by design — `GlobalChrome` hides the dock and Ask Qubi here. |
 | `/quantum` (and `/blog` redirect) | `src/pages/Quantum.tsx` | Quantum Core hub: CSS atom animation + blog post list. |
 | `/blog/:slug` | `src/pages/BlogPost.tsx` | Single journal article. |
 | `/auth` | `src/pages/Auth.tsx` | Sign in / sign up (Supabase + Google OAuth). |
@@ -105,6 +107,7 @@ Entry point: `src/main.tsx` (mounts App, imports fonts + CSS).
 | `AboutButton.tsx` | "ABOUT" nav button next to QuantumButton → opens `/about`. Static icon, no motion. |
 | `ScrollAura.tsx` | Fixed ambient glow that deepens with scroll (framer-motion). |
 | `CosmicLayer.tsx` | Pure-CSS star sheets, nebula, meteors, grid horizon backdrop. |
+| `ConsentBanner.tsx` | GDPR/ePrivacy cookie banner. Accept and Reject carry equal weight (required). Reads/writes `lib/consent.ts`; reopened by the footer's "Cookie preferences" button. |
 
 ### UI primitives (reusable building blocks) — `src/components/ui/`
 | File | What's inside |
@@ -141,7 +144,8 @@ ONE persistent WebGL canvas for the whole site (architecture invariant).
 | File | What's inside |
 |---|---|
 | `SceneManager.ts` | The three.js engine: particle system, render loop, `setProgress(0..7)`. The Q assembles in Hero, dissolves ONCE into an ambient floating field (no further shape morphs, user decision), and `setProgress` past 1.0 only drives a slow per-section color-tint drift. |
-| `SceneCanvas.tsx` | React wrapper; capability gating (reduced motion → static poster, WebGL check, particle budget); exports `getScene()`. |
+| `SceneCanvas.tsx` | React wrapper; capability gating (reduced motion → static poster, WebGL check, particle budget). **Loads `SceneManager` (and therefore three.js) via dynamic import on an idle callback** — three must never re-enter the eager bundle. |
+| `sceneRegistry.ts` | Holds the live SceneManager and exports `getScene()` / `setScene()`. Exists so sections can reach the scene with a *type-only* three.js import — importing `getScene` from SceneCanvas would drag the 460 kB three chunk back into the first-paint path. |
 | `formations.ts` | Precomputed particle shapes: `qFormation` (Hero) and `floatFormation` (the ambient dust field everything after Hero dissolves into and stays as). |
 
 Rules: GSAP/ScrollTrigger owns canvas journey + pins; framer-motion owns UI micro-interactions. Never both on one element. ScrollTriggers driving formations live in `pages/Home.tsx`.
@@ -158,7 +162,9 @@ Rules: GSAP/ScrollTrigger owns canvas journey + pins; framer-motion owns UI micr
 | `useReveal.ts` | `[data-reveal]` scroll-in reveal hook for natural-scroll sections. |
 | `supabase.ts` | Supabase client factory (`getSupabase()` — null when env missing). |
 | `useSession.ts` | Live Supabase session hook + `displayName()`. |
-| `chatSession.ts` | Chat identity: persistent userId, per-tab sessionId, per-conversation chatId. |
+| `chatSession.ts` | Chat identity: per-tab sessionId, per-conversation chatId, and a persistent userId **only when consent was given** (falls back to the session id otherwise). |
+| `consent.ts` | Cookie/storage consent record: `getConsent`, `analyticsAllowed`, `setConsent`, `resetConsent`, `onConsentChange`. Bump `CONSENT_VERSION` to re-prompt everyone after a material policy change. |
+| `antiSpam.ts` | Public-form bot defence: honeypot field name, dwell-time check, `checkSubmission()`, `withoutHoneypot()`. Used by BookingForm and RequestBuilder. |
 
 ---
 
@@ -193,9 +199,12 @@ Identity rules: 90% monochrome, accents ONLY volt `#7C6BFF` + plasma `#3EE0F0`, 
 
 | Location | What's inside |
 |---|---|
-| `public/brand/` | Owner-supplied master files: `logo-square.jpeg`, `logo-wide.jpeg`. Derived transparent-background PNGs actually used on-site: `logo-wide.png` (full lockup, used by `QubitrixLogo.tsx`), `logo-square.png`, `q-mark.png` (icon-only, used by `QubitrixLogo.tsx` + `LogoIntro.tsx`). If the master JPEGs are ever replaced, regenerate the PNGs (alpha = pixel brightness, since the masters are shot on pure black). |
+| `public/brand/` | **WebP only** — `logo-wide.webp` (full lockup, used by `QubitrixLogo.tsx`), `logo-square.webp`, `q-mark.webp` (icon-only, used by `QubitrixLogo.tsx` + `LogoIntro.tsx`). |
+| `design-assets/originals/` | The PNG/JPEG masters, kept OUT of `public/` so they are never published (they were 4 MB of dead deploy weight). Regenerate the WebP files from here after any brand change: max width 1600, quality 82. Alpha = pixel brightness, since the masters are shot on pure black. |
+| `public/robots.txt` | Crawl rules; disallows `/auth` and `/unsubscribe`, points at the sitemap. |
+| `public/sitemap.xml` | Static sitemap — **add a `<url>` entry whenever a page, service, case study or blog post is added.** |
 | `public/favicon.svg` | Browser tab icon. |
-| `public/fonts/` | Clash Display woff2 (500/600). |
+| `public/fonts/` | All self-hosted woff2: Clash Display (500/600), `inter-latin-wght.woff2` (variable, latin subset only), JetBrains Mono 400/500. `@font-face` lives in `src/styles/index.css` — the `@fontsource` package imports were removed because they pulled cyrillic/greek/vietnamese subsets nobody reads. |
 | `public/work/` | Case-study flow images referenced by `content/work.ts`. |
 | `public/team/` | Team headshots referenced by `content/about.ts` (`team[].photo`). Members without a photo yet render initials instead — drop the file here and set the path when a photo arrives. |
 | `screenshots/` | Generated verification screenshots (output only — never edit by hand). |

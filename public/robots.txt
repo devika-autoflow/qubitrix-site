@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+Disallow: /auth
+Disallow: /auth/
+Disallow: /unsubscribe
+
+Sitemap: https://qubitrixai.com/sitemap.xml

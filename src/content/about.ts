@@ -71,13 +71,13 @@ export const team: TeamMember[] = [
     name: "Devika NR",
     role: "Founder · Head of AI Automation & Quantum Computing Research",
     bio: "Devika combines advanced AI innovation with the vision of next-generation computing. She leads Qubitrix's research-driven approach to AI automation, enterprise workflow architecture, and quantum computing — turning ambitious ideas into technologies that help businesses grow smarter and faster.",
-    photo: "/team/devika-nr.png",
+    photo: "/team/devika-nr.webp",
   },
   {
     name: "Legith Kumar",
     role: "Chief Technology Officer",
     bio: "With over 15 years of enterprise software engineering experience at organizations including Wipro and Cognizant, Legith leads the engineering vision at Qubitrix. His expertise in scalable architecture and enterprise systems ensures every solution is secure, reliable, and built for long-term growth.",
-    photo: "/team/legith-kumar.jpg",
+    photo: "/team/legith-kumar.webp",
   },
   {
     name: "Abhishek M Nair",

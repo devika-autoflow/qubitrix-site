@@ -17,17 +17,21 @@ export default function QubitrixLogo({
 }: Props) {
   return withWordmark ? (
     <img
-      src="/brand/logo-wide.png"
+      src="/brand/logo-wide.webp"
       alt="Qubitrix"
-      style={{ height: markSize }}
+      width={1106}
+      height={347}
+      style={{ height: markSize, width: "auto" }}
       className={`select-none ${className}`}
       draggable={false}
     />
   ) : (
     <img
-      src="/brand/q-mark.png"
+      src="/brand/q-mark.webp"
       alt="Qubitrix"
-      style={{ height: markSize }}
+      width={343}
+      height={343}
+      style={{ height: markSize, width: "auto" }}
       className={`select-none ${className}`}
       draggable={false}
     />

@@ -17,6 +17,11 @@ export default defineConfig({
         manualChunks: {
           three: ["three"],
           gsap: ["gsap"],
+          // Vendor code changes far less often than ours — separate chunks mean
+          // a content edit does not invalidate React in everyone's cache.
+          react: ["react", "react-dom", "react-router-dom"],
+          motion: ["framer-motion"],
+          supabase: ["@supabase/supabase-js"],
         },
       },
     },

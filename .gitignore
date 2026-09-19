@@ -7,3 +7,14 @@ dist-ssr
 .netlify
 *.local
 screenshots
+
+# OneDrive sync duplicates — these must never be committed or deployed.
+# `_- Copy.env` in particular was a committed copy of the real .env.
+* - Copy.*
+*- Copy.*
+* - Copy
+_- Copy.env
+_- Copy.gitignore
+
+# Editor/sync temp artifacts
+*.tmp.*

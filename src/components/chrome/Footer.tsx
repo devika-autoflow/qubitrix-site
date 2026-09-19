@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import QubitrixLogo from "../ui/QubitrixLogo";
 import SocialIcons from "../ui/SocialIcons";
 import { site } from "../../content/site";
+import { resetConsent } from "../../lib/consent";
 
 export default function Footer() {
   return (
@@ -25,6 +26,15 @@ export default function Footer() {
             <li><Link className="hover:text-silver-100" to="/legal/privacy">Privacy</Link></li>
             <li><Link className="hover:text-silver-100" to="/legal/terms">Terms</Link></li>
             <li><Link className="hover:text-silver-100" to="/legal/cookies">Cookies</Link></li>
+            <li>
+              <button
+                type="button"
+                className="hover:text-silver-100"
+                onClick={() => resetConsent()}
+              >
+                Cookie preferences
+              </button>
+            </li>
           </ul>
         </div>
 

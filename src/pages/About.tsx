@@ -63,6 +63,10 @@ function TeamCard({ member }: { member: TeamMember }) {
         <img
           src={member.photo}
           alt={member.name}
+          width={160}
+          height={160}
+          loading="lazy"
+          decoding="async"
           className="h-16 w-16 shrink-0 rounded-full border border-white/10 object-cover object-top"
         />
       ) : (

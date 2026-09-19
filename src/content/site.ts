@@ -37,6 +37,9 @@ export const site = {
   /** n8n webhook that powers the chat console (set VITE_CHAT_WEBHOOK_URL in env). */
   chatWebhookUrl: import.meta.env.VITE_CHAT_WEBHOOK_URL as string | undefined,
 
+  /** n8n webhook for the real-estate lead-qualification demo (set VITE_DEMO_CHAT_WEBHOOK_URL in env). */
+  demoChatWebhookUrl: import.meta.env.VITE_DEMO_CHAT_WEBHOOK_URL as string | undefined,
+
   /** Calendly booking link (set VITE_CALENDLY_URL in env). */
   calendlyUrl: import.meta.env.VITE_CALENDLY_URL as string | undefined,
 } as const;

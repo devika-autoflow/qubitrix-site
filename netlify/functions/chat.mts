@@ -9,7 +9,7 @@ import Anthropic from "@anthropic-ai/sdk";
  * else 503 and the client falls back to scripted demo mode.
  */
 
-const SYSTEM_PROMPT = `You are Qubi, the on-site AI assistant for QUBITRIX (qubitrixai.com), an AI engineering studio founded by Devika Raj NR. If asked your name, say Qubi.
+const SYSTEM_PROMPT = `You are Qubi, the on-site AI assistant for QUBITRIX (qubitrixai.com), an AI automation agency founded by Devika Raj NR. If asked your name, say Qubi.
 
 What Qubitrix does:
 - AI Agents: autonomous systems that reason, decide, and act (2-4 weeks per agent)
@@ -80,17 +80,73 @@ async function askGemini(messages: ChatMessage[]): Promise<string> {
   return data.candidates?.[0]?.content?.parts?.[0]?.text ?? "";
 }
 
+/**
+ * Abuse controls. Without these the endpoint is an open, unmetered proxy to a
+ * paid API — anyone can loop it and bill us.
+ *
+ * The bucket lives in module scope, so it is shared for the lifetime of a warm
+ * instance only. That is deliberate: it is a cheap brake on scripted loops, not
+ * a distributed quota. Set a hard spend cap in the provider console as well.
+ */
+const ALLOWED_ORIGINS = [
+  "https://qubitrixai.com",
+  "https://www.qubitrixai.com",
+  "http://localhost:5173",
+];
+const MAX_BODY_BYTES = 16_000;
+const WINDOW_MS = 60_000;
+const MAX_PER_WINDOW = 12;
+const hits = new Map<string, number[]>();
+
+function rateLimited(ip: string): boolean {
+  const now = Date.now();
+  const recent = (hits.get(ip) ?? []).filter((t) => now - t < WINDOW_MS);
+  recent.push(now);
+  hits.set(ip, recent);
+  if (hits.size > 5000) hits.clear(); // crude ceiling on memory growth
+  return recent.length > MAX_PER_WINDOW;
+}
+
+function json(body: unknown, status: number): Response {
+  return new Response(JSON.stringify(body), {
+    status,
+    headers: { "Content-Type": "application/json" },
+  });
+}
+
 export default async (req: Request): Promise<Response> => {
   if (req.method !== "POST") {
-    return new Response(JSON.stringify({ error: "method_not_allowed" }), {
-      status: 405,
-      headers: { "Content-Type": "application/json" },
+    return json({ error: "method_not_allowed" }, 405);
+  }
+
+  // Same-origin only. A missing Origin header is rejected too — every real
+  // browser fetch from the site sends one on a cross-origin-capable POST.
+  const origin = req.headers.get("origin");
+  if (!origin || !ALLOWED_ORIGINS.includes(origin)) {
+    return json({ error: "forbidden" }, 403);
+  }
+
+  const ip =
+    req.headers.get("x-nf-client-connection-ip") ??
+    req.headers.get("x-forwarded-for")?.split(",")[0].trim() ??
+    "unknown";
+  if (rateLimited(ip)) {
+    return new Response(JSON.stringify({ error: "rate_limited" }), {
+      status: 429,
+      headers: { "Content-Type": "application/json", "Retry-After": "60" },
     });
+  }
+
+  const declared = Number(req.headers.get("content-length") ?? 0);
+  if (declared > MAX_BODY_BYTES) {
+    return json({ error: "payload_too_large" }, 413);
   }
 
   let messages: ChatMessage[];
   try {
-    const body = await req.json();
+    const raw = await req.text();
+    if (raw.length > MAX_BODY_BYTES) return json({ error: "payload_too_large" }, 413);
+    const body = JSON.parse(raw);
     messages = sanitize(body?.messages);
   } catch {
     return new Response(JSON.stringify({ error: "bad_request" }), {
